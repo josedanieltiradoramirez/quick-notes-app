@@ -1,0 +1,47 @@
+#textarea-note-body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        padding: 20px;
+        border-radius: 5px;
+}
+#textarea-note-title {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        padding: 20px;
+        border-radius: 5px;
+}
+li button {
+  margin-left: 10px;
+  border: none;
+  background: none;
+  color: gray;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#notes-container div {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+#notes-container button {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #666;
+  white-space: nowrap;
+}
+
+#notes-container button:hover {
+  background-color: #f0f0f0;
+}
