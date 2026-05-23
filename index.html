@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-            <title>Notes</title>
-            <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <h1>Quick Notes</h1>
-        <div class = "main">
-            <textarea id="textarea-note-title" placeholder="Title"></textarea>
-            <textarea id="textarea-note-body" placeholder="Write your notes here..."></textarea>
-            <button id="button-add-note">Add Note</button>
-        </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Notes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-        <div id="notes-container"></div>
+  <header>
+    <h1>Quick Notes</h1>
+  </header>
 
-        <script src="app.js"></script>
+  <main>
+    <section class="form-section">
+      <textarea id="textarea-note-title" placeholder="Title" rows="1"></textarea>
+      <textarea id="textarea-note-body" placeholder="Write your note here..." rows="4"></textarea>
+      <button id="button-add-note">Add Note</button>
+    </section>
 
+    <section id="notes-container"></section>
+  </main>
 
-
-    </body>
+  <script src="app.js"></script>
+</body>
 </html>

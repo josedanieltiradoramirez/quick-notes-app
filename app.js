@@ -39,28 +39,31 @@ function renderNote(note) {
   title.textContent = note.title
   p.textContent = note.content
 
+  const actions = document.createElement('div')
+  actions.classList.add('note-actions')
 
   const buttonEditNote = document.createElement('button')
   buttonEditNote.textContent = 'Edit'
   buttonEditNote.addEventListener('click', async function(){
     const newTitle = prompt('Edit your note title:', note.title)
-    const newText = prompt('Edita your note', note.content)
+    const newText = prompt('Edit your note:', note.content)
     if (newText && newText.trim() !== '' && newTitle && newTitle.trim() !== '') {
-      editNote(note.id, newText.trim(), p, newTitle.trim())
+      editNote(note.id, newText.trim(), p, newTitle.trim(), title)
     }
-  }
-  )
+  })
 
   const buttonDeleteNote = document.createElement('button')
-  buttonDeleteNote.textContent = 'X'
+  buttonDeleteNote.textContent = 'Delete'
   buttonDeleteNote.addEventListener('click', function(evento) {
     evento.stopPropagation()
     deleteNote(note.id, div)
   })
+
+  actions.appendChild(buttonEditNote)
+  actions.appendChild(buttonDeleteNote)
   div.appendChild(title)
   div.appendChild(p)
-  div.appendChild(buttonEditNote)
-  div.appendChild(buttonDeleteNote)
+  div.appendChild(actions)
   container.appendChild(div)
 }
 
@@ -76,6 +79,7 @@ async function editNote(id, newContent, elementP, newTitle) {
     body: JSON.stringify({title: newTitle, content: newContent })
     })
     elementP.textContent = newContent
+    elementTitle.textContent = newTitle
 }
 
 loadNotes()

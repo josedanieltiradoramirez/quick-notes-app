@@ -7,7 +7,6 @@ from app.models.notes import Notes
 
 app = FastAPI()
 
-Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,8 +14,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-notes = {}
-counter = 0
 
 class NoteSchema(BaseModel):
     title: str
@@ -35,7 +32,7 @@ async def create_note(note: NoteSchema, db: Session = Depends(get_db)):
     return new_note
 
 @app.put("/notes/{id}")
-async def edit_note(id: str, note: NoteSchema, db: Session = Depends(get_db)):
+async def edit_note(id: int, note: NoteSchema, db: Session = Depends(get_db)):
     existing_note = db.query(Notes).filter(Notes.id == id).first()
     if not existing_note:
         raise HTTPException(status_code=404, detail="Note not found")
@@ -48,7 +45,7 @@ async def edit_note(id: str, note: NoteSchema, db: Session = Depends(get_db)):
 
 
 @app.delete("/notes/{id}")
-async def delete_note(id: str, db: Session = Depends(get_db)):
+async def delete_note(id: int, db: Session = Depends(get_db)):
     note = db.query(Notes).filter(Notes.id == id).first()
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")

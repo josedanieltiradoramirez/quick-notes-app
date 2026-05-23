@@ -1,47 +1,141 @@
-#textarea-note-body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
-        padding: 20px;
-        border-radius: 5px;
-}
-#textarea-note-title {
-        font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
-        padding: 20px;
-        border-radius: 5px;
-}
-li button {
-  margin-left: 10px;
-  border: none;
-  background: none;
-  color: gray;
-  cursor: pointer;
-  font-size: 12px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-#notes-container div {
-  background: white;
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  color: #222;
+  min-height: 100vh;
+}
+
+header {
+  padding: 24px 40px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 40px;
+}
+
+/* formulario */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+
+.form-section textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: flex-start;
-  align-items: center;
-  gap: 10px;
+  resize: none;
+  background: #fff;
+  color: #222;
+  transition: border-color 0.2s;
 }
 
-#notes-container button {
+.form-section textarea:focus {
+  outline: none;
+  border-color: #999;
+}
+
+#textarea-note-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+#button-add-note {
+  align-self: flex-end;
+  padding: 8px 22px;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#button-add-note:hover {
+  background: #444;
+}
+
+/* cuadrícula de notas */
+#notes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* tarjeta individual */
+#notes-container > div {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.2s;
+}
+
+#notes-container > div:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* título de la nota */
+#notes-container div p:first-child {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* contenido de la nota */
+#notes-container div p:nth-child(2) {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* botones de la tarjeta */
+.note-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.note-actions button {
   background: none;
   border: 1px solid #ddd;
   border-radius: 6px;
-  padding: 4px 10px;
+  padding: 4px 12px;
   font-size: 12px;
+  font-family: inherit;
   cursor: pointer;
   color: #666;
-  white-space: nowrap;
+  transition: all 0.2s;
 }
 
-#notes-container button:hover {
-  background-color: #f0f0f0;
+.note-actions button:hover {
+  background: #f0f0f0;
+  border-color: #bbb;
 }
