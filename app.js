@@ -5,6 +5,14 @@ const container = document.querySelector('#notes-container')
 
 const API = 'http://127.0.0.1:8000'
 
+async function loadNotes(){
+  const response = await fetch(`${API}/notes`)
+  const notes = await response.json()
+
+  container.innerHTML = ''
+  notes.forEach(note => renderNote(note))
+}
+
 buttonAddNote.addEventListener('click',async function() {
     const noteContent = textareaNoteBody.value.trim()
     const noteTitle = textareaNoteTitle.value.trim()
@@ -35,7 +43,7 @@ function renderNote(note) {
   const buttonEditNote = document.createElement('button')
   buttonEditNote.textContent = 'Edit'
   buttonEditNote.addEventListener('click', async function(){
-    const newTitle = prompt('Edit your note title:', note.content)
+    const newTitle = prompt('Edit your note title:', note.title)
     const newText = prompt('Edita your note', note.content)
     if (newText && newText.trim() !== '' && newTitle && newTitle.trim() !== '') {
       editNote(note.id, newText.trim(), p, newTitle.trim())
@@ -69,3 +77,5 @@ async function editNote(id, newContent, elementP, newTitle) {
     })
     elementP.textContent = newContent
 }
+
+loadNotes()
