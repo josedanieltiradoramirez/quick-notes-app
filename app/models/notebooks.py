@@ -1,15 +1,18 @@
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 from app.core.database import Base
-from sqlalchemy import Column, Integer, String, Float, Boolean
 
 class Notebooks(Base):
     __tablename__ = 'notebooks'
+
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
-    content = Column(String, nullable=False)
-    owner_id = Column(Integer, nullable=False)
-    date = Column(String, nullable=False)
-    notebook_id = Column(Integer, nullable=False)
-    parent_folder_id = Column(Integer, nullable=False)
-    child_note_id = Column(Integer, nullable=False)
-    bibliography_id = Column(Integer, nullable=False)
-    
+    description = Column(String, nullable=True)
+    parent_id = Column(Integer, ForeignKey('notebooks.id'), nullable=True)
+
+    # jerarquía
+    parent = relationship('Notebooks', remote_side=[id], back_populates='children')
+    children = relationship('Notebooks', back_populates='parent')
+
+    # notas
+    notes = relationship('Notes', back_populates='notebook')

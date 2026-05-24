@@ -72,7 +72,7 @@ async function deleteNote(id, element) {
     element.remove()
 }
 
-async function editNote(id, newContent, elementP, newTitle) {
+async function editNote(id, newContent, elementP, newTitle, elementTitle) {
     const response = await fetch(`${API}/notes/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
