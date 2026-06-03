@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.database import Base, get_db, SessionLocal, engine
 from app.models.notes import Notes
 from app.routers import notes
+from app.routers import notebooks
 
 app = FastAPI()
 
@@ -17,3 +18,4 @@ app.add_middleware(
 )
 
 app.include_router(notes.router)
+app.include_router(notebooks.router)

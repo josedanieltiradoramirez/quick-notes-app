@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -15,6 +17,7 @@ router = APIRouter(
 class NoteSchema(BaseModel):
     title: str
     content: str
+    notebook_id: Optional[int] = None
 
 @router.get("/")
 async def get_all_notes(db: Session = Depends(get_db)):
@@ -22,7 +25,7 @@ async def get_all_notes(db: Session = Depends(get_db)):
 
 @router.post("/")
 async def create_note(note: NoteSchema, db: Session = Depends(get_db)):
-    new_note = Notes(title = note.title, content = note.content)
+    new_note = Notes(title = note.title, content = note.content, notebook_id = note.notebook_id)
     db.add(new_note)
     db.commit()
     db.refresh(new_note)
@@ -35,6 +38,7 @@ async def edit_note(id: int, note: NoteSchema, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Note not found")
     existing_note.title = note.title
     existing_note.content = note.content
+    existing_note.notebook_id = note.notebook_id
     db.commit()
     db.refresh(existing_note)
     return existing_note
