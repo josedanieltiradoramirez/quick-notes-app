@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.models.bibliographies import Bibliographies
 from app.models.notes import Notes
 from app.models.notebooks import Notebooks
 
@@ -18,6 +19,7 @@ class NoteSchema(BaseModel):
     title: str
     content: str
     notebook_ids: Optional[List[int]] = []
+    bibliography_ids: Optional[List[int]] = []
 
 @router.get("/")
 async def get_all_notes(db: Session = Depends(get_db)):
@@ -30,6 +32,10 @@ async def create_note(note: NoteSchema, db: Session = Depends(get_db)):
     if note.notebook_ids:
         notebooks = db.query(Notebooks).filter(Notebooks.id.in_(note.notebook_ids)).all()
         new_note.notebooks = notebooks
+
+    if note.bibliography_ids:
+        bibliographies = db.query(Bibliographies).filter(Bibliographies.id.in_(note.bibliography_ids)).all()
+        new_note.bibliographies = bibliographies
 
     db.add(new_note)
     db.commit()
@@ -48,6 +54,10 @@ async def edit_note(id: int, note: NoteSchema, db: Session = Depends(get_db)):
     if note.notebook_ids is not None:
         notebooks = db.query(Notebooks).filter(Notebooks.id.in_(note.notebook_ids)).all()
         existing_note.notebooks = notebooks
+
+    if note.bibliography_ids is not None:
+        bibliographies = db.query(Bibliographies).filter(Bibliographies.id.in_(note.bibliography_ids)).all()
+        existing_note.bibliographies = bibliographies
 
     db.commit()
     db.refresh(existing_note)

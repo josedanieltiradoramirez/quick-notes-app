@@ -6,8 +6,11 @@ from app.core.database import Base, get_db, SessionLocal, engine
 from app.models.notes import Notes
 from app.models.notebooks import Notebooks
 from app.models.notes_notebooks import NoteNotebook
+from app.models.bibliographies import Bibliographies
+from app.models.notes_bibliographies import NoteBibliography
 from app.routers import notes
 from app.routers import notebooks
+from app.routers import bibliography
 
 app = FastAPI()
 
@@ -21,3 +24,4 @@ app.add_middleware(
 
 app.include_router(notes.router)
 app.include_router(notebooks.router)
+app.include_router(bibliography.router)

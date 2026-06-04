@@ -5,6 +5,8 @@ from app.core.database import Base, SQLALCHEMY_DATABASE_URL
 from app.models.bibliographies import Bibliographies
 from app.models.notebooks import Notebooks
 from app.models.notes import Notes
+from app.models.notes_notebooks import NoteNotebook
+from app.models.notes_bibliographies import NoteBibliography
 
 config = context.config
 config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
