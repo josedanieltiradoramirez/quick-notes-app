@@ -14,5 +14,5 @@ class Notebooks(Base):
     parent = relationship('Notebooks', remote_side=[id], back_populates='children')
     children = relationship('Notebooks', back_populates='parent')
 
-    # notas
-    notes = relationship('Notes', back_populates='notebook')
+    # muchos a muchos
+    notes = relationship('Notes', secondary='notes_notebooks', back_populates='notebooks')

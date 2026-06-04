@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -17,7 +17,7 @@ router = APIRouter(
 class NoteSchema(BaseModel):
     title: str
     content: str
-    notebook_id: Optional[int] = None
+    notebook_ids: Optional[List[int]] = []
 
 @router.get("/")
 async def get_all_notes(db: Session = Depends(get_db)):
@@ -25,11 +25,17 @@ async def get_all_notes(db: Session = Depends(get_db)):
 
 @router.post("/")
 async def create_note(note: NoteSchema, db: Session = Depends(get_db)):
-    new_note = Notes(title = note.title, content = note.content, notebook_id = note.notebook_id)
+    new_note = Notes(title=note.title, content=note.content)
+    
+    if note.notebook_ids:
+        notebooks = db.query(Notebooks).filter(Notebooks.id.in_(note.notebook_ids)).all()
+        new_note.notebooks = notebooks
+
     db.add(new_note)
     db.commit()
     db.refresh(new_note)
     return new_note
+
 
 @router.put("/{id}")
 async def edit_note(id: int, note: NoteSchema, db: Session = Depends(get_db)):
@@ -38,7 +44,11 @@ async def edit_note(id: int, note: NoteSchema, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Note not found")
     existing_note.title = note.title
     existing_note.content = note.content
-    existing_note.notebook_id = note.notebook_id
+
+    if note.notebook_ids is not None:
+        notebooks = db.query(Notebooks).filter(Notebooks.id.in_(note.notebook_ids)).all()
+        existing_note.notebooks = notebooks
+
     db.commit()
     db.refresh(existing_note)
     return existing_note

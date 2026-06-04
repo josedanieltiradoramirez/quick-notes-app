@@ -8,7 +8,6 @@ class Notes(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     content = Column(String, nullable=False)
-    notebook_id = Column(Integer, ForeignKey('notebooks.id'), nullable=True)
 
-    # relación
-    notebook = relationship('Notebooks', back_populates='notes')
+    # muchos a muchos
+    notebooks = relationship('Notebooks', secondary='notes_notebooks', back_populates='notes')
