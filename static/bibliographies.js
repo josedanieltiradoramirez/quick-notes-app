@@ -65,7 +65,8 @@ function renderBibliography(bibliography) {
 
     const buttonEdit = document.createElement('button')
     buttonEdit.textContent = 'Edit'
-    buttonEdit.addEventListener('click', function() {
+    buttonEdit.addEventListener('click', function(e) {
+        e.stopPropagation()
         const inputTitle = document.createElement('input')
         inputTitle.value = bibliography.title
 
@@ -79,7 +80,8 @@ function renderBibliography(bibliography) {
 
         const buttonSave = document.createElement('button')
         buttonSave.textContent = 'Save'
-        buttonSave.addEventListener('click', async function() {
+        buttonSave.addEventListener('click', async function(e) {
+            e.stopPropagation()
             const newTitle = inputTitle.value.trim()
             const newUrl = inputUrl.value.trim()
             const newDescription = inputDescription.value.trim()
@@ -118,6 +120,10 @@ function renderBibliography(bibliography) {
         deleteNote(bibliography.id, div)
     })
 
+    div.addEventListener('click', function() {
+        window.location.href = `/bibliographies/${bibliography.id}`
+    })
+
     actions.appendChild(buttonEdit)
     actions.appendChild(buttonDelete)
     div.appendChild(title)
@@ -131,5 +137,7 @@ async function deleteNote(id, element) {
     await fetch(`${API}/api/bibliographies/${id}`, { method: 'DELETE' })
     element.remove()
 }
+
+
 
 loadBibliographies()

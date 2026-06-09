@@ -60,7 +60,8 @@ function renderNotebook(notebook) {
 
     const buttonEdit = document.createElement('button')
     buttonEdit.textContent = 'Edit'
-    buttonEdit.addEventListener('click', function() {
+    buttonEdit.addEventListener('click', function(e) {
+        e.stopPropagation()
         const inputTitle = document.createElement('input')
         inputTitle.value = notebook.title
 
@@ -70,7 +71,8 @@ function renderNotebook(notebook) {
 
         const buttonSave = document.createElement('button')
         buttonSave.textContent = 'Save'
-        buttonSave.addEventListener('click', async function() {
+        buttonSave.addEventListener('click', async function(e) {
+            e.stopPropagation()
             const newTitle = inputTitle.value.trim()
             const newDescription = inputDescription.value.trim()
             if (newTitle === '') return
@@ -101,6 +103,10 @@ function renderNotebook(notebook) {
     buttonDelete.addEventListener('click', function(e) {
         e.stopPropagation()
         deleteNotebook(notebook.id, div)
+    })
+
+    div.addEventListener('click', function() {
+    window.location.href = `/notebooks/${notebook.id}`
     })
 
     actions.appendChild(buttonEdit)

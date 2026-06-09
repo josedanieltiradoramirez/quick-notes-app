@@ -355,3 +355,11 @@ nav {
 #bibliographies-container a:hover {
   text-decoration: underline;
 }
+
+#bibliographies-container > div {
+  cursor: pointer;
+}
+
+#bibliographies-container > div * {
+  cursor: pointer;
+}

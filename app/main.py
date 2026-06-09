@@ -63,3 +63,19 @@ async def bibliographies_page(request: Request):
         name="bibliographies.html",
         context={"active": "bibliographies"}
     )
+
+@app.get("/notebooks/{id}")
+async def notebook_detail_page(id: int, request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="notebook_detail.html",
+        context={"active": "notebooks", "notebook_id": id}
+    )
+
+@app.get("/bibliographies/{id}")
+async def bibliography_detail_page(id: int, request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="bibliography_detail.html",
+        context={"active": "bibliographies", "bibliography_id": id}
+    )

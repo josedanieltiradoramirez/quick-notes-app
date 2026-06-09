@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Notebook — Quick Notes{% endblock %}
+
+{% block content %}
+  <div class="content-header">
+    <h1 id="bibliography-title">Loading...</h1>
+    <button id="button-new-note">+ New Note</button>
+  </div>
+
+  <div id="new-note-form" class="form-card hidden">
+    <input type="text" id="input-note-title" placeholder="Title">
+    <textarea id="input-note-body" placeholder="Write your note here..." rows="4"></textarea>
+    <div class="form-actions">
+      <button id="button-save-note">Save</button>
+      <button id="button-cancel-note">Cancel</button>
+    </div>
+  </div>
+
+  <div id="notes-container"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    const BIBLIOGRAPHY_ID = {{ bibliography_id }}
+  </script>
+  <script src="/static/bibliography_detail.js"></script>
+{% endblock %}
