@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Quick Notes{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">Quick Notes</div>
+      <nav>
+        <a href="/notebooks" class="nav-item {% if active == 'notebooks' %}active{% endif %}">
+          <span>📓</span> Notebooks
+        </a>
+        <a href="/bibliographies" class="nav-item {% if active == 'bibliographies' %}active{% endif %}">
+          <span>📚</span> Bibliographies
+        </a>
+        <a href="/notes" class="nav-item {% if active == 'notes' %}active{% endif %}">
+          <span>📝</span> All Notes
+        </a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

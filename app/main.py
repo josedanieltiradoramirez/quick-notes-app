@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from app.core.database import Base, get_db, SessionLocal, engine
@@ -11,6 +12,8 @@ from app.models.notes_bibliographies import NoteBibliography
 from app.routers import notes
 from app.routers import notebooks
 from app.routers import bibliography
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -22,6 +25,41 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(notes.router)
-app.include_router(notebooks.router)
-app.include_router(bibliography.router)
+# archivos estáticos (CSS, JS)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# templates
+templates = Jinja2Templates(directory="templates")
+
+app.include_router(notes.router, prefix="/api")
+app.include_router(notebooks.router, prefix="/api")
+app.include_router(bibliography.router, prefix="/api")
+
+
+@app.get("/")
+async def index(request: Request):
+    return RedirectResponse(url="/notebooks")
+
+@app.get("/notebooks")
+async def notebooks_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="notebooks.html",
+        context={"active": "notebooks"}
+    )
+
+@app.get("/notes")
+async def notes_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="notes.html",
+        context={"active": "notes"}
+    )
+
+@app.get("/bibliographies")
+async def bibliographies_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="bibliographies.html",
+        context={"active": "bibliographies"}
+    )

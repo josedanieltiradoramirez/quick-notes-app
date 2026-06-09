@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Notebooks — Quick Notes{% endblock %}
+
+{% block content %}
+  <div class="content-header">
+    <h1>Notebooks</h1>
+    <button id="button-new-notebook">+ New Notebook</button>
+  </div>
+
+  <div id="new-notebook-form" class="form-card hidden">
+    <input type="text" id="input-notebook-title" placeholder="Notebook title">
+    <textarea id="input-notebook-description" placeholder="Description (optional)" rows="2"></textarea>
+    <div class="form-actions">
+      <button id="button-save-notebook">Save</button>
+      <button id="button-cancel-notebook">Cancel</button>
+    </div>
+  </div>
+
+  <div id="notebooks-container"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/notebooks.js"></script>
+{% endblock %}

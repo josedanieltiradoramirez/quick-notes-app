@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Bibliographies — Quick Notes{% endblock %}
+
+{% block content %}
+  <div class="content-header">
+    <h1>Bibliographies</h1>
+    <button id="button-new-bibliography">+ New Bibliography</button>
+  </div>
+
+  <div id="new-bibliography-form" class="form-card hidden">
+    <input type="text" id="input-bibliography-title" placeholder="Title">
+    <input type="text" id="input-bibliography-url" placeholder="URL (optional)">
+    <textarea id="input-bibliography-description" placeholder="Description (optional)" rows="2"></textarea>
+    <div class="form-actions">
+      <button id="button-save-bibliography">Save</button>
+      <button id="button-cancel-bibliography">Cancel</button>
+    </div>
+  </div>
+
+  <div id="bibliographies-container"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/bibliographies.js"></script>
+{% endblock %}

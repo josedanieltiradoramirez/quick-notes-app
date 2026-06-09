@@ -6,7 +6,7 @@ const container = document.querySelector('#notes-container')
 const API = 'http://127.0.0.1:8000'
 
 async function loadNotes(){
-  const response = await fetch(`${API}/notes`)
+  const response = await fetch(`${API}/api/notes`)
   const notes = await response.json()
 
   container.innerHTML = ''
@@ -18,7 +18,7 @@ buttonAddNote.addEventListener('click',async function() {
     const noteTitle = textareaNoteTitle.value.trim()
     if (noteContent === '' || noteTitle === '') return
 
-    const response = await fetch(`${API}/notes`, {
+    const response = await fetch(`${API}/api/notes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({title: noteTitle, content: noteContent })
@@ -68,12 +68,12 @@ function renderNote(note) {
 }
 
 async function deleteNote(id, element) {
-    await fetch(`${API}/notes/${id}`, {method: 'DELETE'})
+    await fetch(`${API}/api/notes/${id}`, {method: 'DELETE'})
     element.remove()
 }
 
 async function editNote(id, newContent, elementP, newTitle, elementTitle) {
-    const response = await fetch(`${API}/notes/${id}`, {
+    const response = await fetch(`${API}/api/notes/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({title: newTitle, content: newContent })

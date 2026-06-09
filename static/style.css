@@ -1,0 +1,357 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  color: #222;
+  min-height: 100vh;
+}
+
+/* layout principal */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* sidebar */
+.sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar-logo {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  padding: 0 8px;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #555;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.nav-item:hover {
+  background: #f5f5f5;
+  color: #222;
+}
+
+.nav-item.active {
+  background: #f0f0f0;
+  color: #222;
+  font-weight: 500;
+}
+
+/* contenido principal */
+.content {
+  margin-left: 220px;
+  padding: 40px;
+  flex: 1;
+  max-width: 1100px;
+}
+
+.content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.content-header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+/* botones primarios */
+.content-header button,
+#button-add-note {
+  padding: 8px 18px;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.content-header button:hover,
+#button-add-note:hover {
+  background: #444;
+}
+
+/* formulario flotante */
+.form-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 520px;
+}
+
+.form-card.hidden {
+  display: none;
+}
+
+.form-card input,
+.form-card textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  resize: none;
+  background: #fff;
+  color: #222;
+  transition: border-color 0.2s;
+}
+
+.form-card input:focus,
+.form-card textarea:focus {
+  outline: none;
+  border-color: #999;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.form-actions button:first-child {
+  padding: 7px 18px;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.form-actions button:first-child:hover {
+  background: #444;
+}
+
+.form-actions button:last-child {
+  padding: 7px 18px;
+  background: none;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form-actions button:last-child:hover {
+  background: #f5f5f5;
+}
+
+/* cuadrícula de notas */
+#notes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* tarjeta individual */
+#notes-container > div {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.2s;
+}
+
+#notes-container > div:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+#notes-container div p:first-child {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+#notes-container div p:nth-child(2) {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* botones de tarjeta */
+.note-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.note-actions button {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.note-actions button:hover {
+  background: #f0f0f0;
+  border-color: #bbb;
+}
+
+/* notebooks container */
+#notebooks-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+#notebooks-container > div {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+#notebooks-container > div:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* edición inline */
+#notes-container div input,
+#notes-container div textarea {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  resize: none;
+  background: #fafafa;
+  color: #222;
+  transition: border-color 0.2s;
+}
+
+#notes-container div input:focus,
+#notes-container div textarea:focus {
+  outline: none;
+  border-color: #666;
+  background: #fff;
+}
+
+/* edición inline notebooks */
+#notebooks-container div input,
+#notebooks-container div textarea {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  resize: none;
+  background: #fafafa;
+  color: #222;
+  transition: border-color 0.2s;
+}
+
+#notebooks-container div input:focus,
+#notebooks-container div textarea:focus {
+  outline: none;
+  border-color: #666;
+  background: #fff;
+}
+
+#bibliographies-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+#bibliographies-container > div {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.2s;
+}
+
+#bibliographies-container > div:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+#bibliographies-container div input,
+#bibliographies-container div textarea {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  resize: none;
+  background: #fafafa;
+  color: #222;
+  transition: border-color 0.2s;
+}
+
+#bibliographies-container a {
+  font-size: 13px;
+  color: #4a90d9;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+#bibliographies-container a:hover {
+  text-decoration: underline;
+}
