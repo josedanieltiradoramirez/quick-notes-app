@@ -8,6 +8,21 @@ const inputTitle = document.querySelector('#input-bibliography-title')
 const inputUrl = document.querySelector('#input-bibliography-url')
 const inputDescription = document.querySelector('#input-bibliography-description')
 const container = document.querySelector('#bibliographies-container')
+const searchInput = document.querySelector('#search-input')
+
+searchInput.addEventListener('input', function() {
+    const query = searchInput.value.toLowerCase()
+    const cards = container.querySelectorAll(':scope > div')
+    
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase()
+        if (text.includes(query)) {
+            card.style.display = 'flex'
+        } else {
+            card.style.display = 'none'
+        }
+    })
+})
 
 buttonNewBibliography.addEventListener('click', function() {
     form.classList.remove('hidden')

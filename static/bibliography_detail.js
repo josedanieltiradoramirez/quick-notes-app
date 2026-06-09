@@ -8,6 +8,21 @@ const inputTitle = document.querySelector('#input-note-title')
 const inputBody = document.querySelector('#input-note-body')
 const container = document.querySelector('#notes-container')
 const bibliographyTitle = document.querySelector('#bibliography-title')
+const searchInput = document.querySelector('#search-input')
+
+searchInput.addEventListener('input', function() {
+    const query = searchInput.value.toLowerCase()
+    const cards = container.querySelectorAll(':scope > div')
+    
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase()
+        if (text.includes(query)) {
+            card.style.display = 'flex'
+        } else {
+            card.style.display = 'none'
+        }
+    })
+})
 
 buttonNewNote.addEventListener('click', function() {
     form.classList.remove('hidden')

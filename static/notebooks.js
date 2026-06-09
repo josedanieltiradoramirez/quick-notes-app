@@ -7,6 +7,21 @@ const form = document.querySelector('#new-notebook-form')
 const inputTitle = document.querySelector('#input-notebook-title')
 const inputDescription = document.querySelector('#input-notebook-description')
 const container = document.querySelector('#notebooks-container')
+const searchInput = document.querySelector('#search-input')
+
+searchInput.addEventListener('input', function() {
+    const query = searchInput.value.toLowerCase()
+    const cards = container.querySelectorAll(':scope > div')
+    
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase()
+        if (text.includes(query)) {
+            card.style.display = 'flex'
+        } else {
+            card.style.display = 'none'
+        }
+    })
+})
 
 // mostrar/ocultar formulario
 buttonNewNotebook.addEventListener('click', function() {

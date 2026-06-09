@@ -4,9 +4,14 @@
 
 {% block content %}
   <div class="content-header">
+  <div style="display:flex; align-items:center; gap:16px;">
+    <a href="/notebooks" class="back-button">← Back</a>
     <h1 id="notebook-title">Loading...</h1>
-    <button id="button-new-note">+ New Note</button>
   </div>
+  <button id="button-new-note">+ New Note</button>
+  </div>
+
+  <input type="text" id="search-input" placeholder="Search notes...">
 
   <div id="new-note-form" class="form-card hidden">
     <input type="text" id="input-note-title" placeholder="Title">

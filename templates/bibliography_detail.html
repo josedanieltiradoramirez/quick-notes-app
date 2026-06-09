@@ -1,12 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}Notebook — Quick Notes{% endblock %}
+{% block title %}Bibliography — Quick Notes{% endblock %}
 
 {% block content %}
   <div class="content-header">
+  <div style="display:flex; align-items:center; gap:16px;">
+    <a href="/bibliographies" class="back-button">← Back</a>
     <h1 id="bibliography-title">Loading...</h1>
-    <button id="button-new-note">+ New Note</button>
   </div>
+  <button id="button-new-note">+ New Note</button>
+  </div>
+
+  <input type="text" id="search-input" placeholder="Search notebooks...">
 
   <div id="new-note-form" class="form-card hidden">
     <input type="text" id="input-note-title" placeholder="Title">
