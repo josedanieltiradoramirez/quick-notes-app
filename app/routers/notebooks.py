@@ -69,3 +69,9 @@ async def delete_notebook(id: int, db: Session = Depends(get_db)):
     
     return {"ok" : True}
     
+@router.get("/{id}/notebooks")
+async def get_notebook_children(id: int, db: Session = Depends(get_db)):
+    notebook = db.query(Notebooks).filter(Notebooks.id == id).first()
+    if not notebook:
+        raise HTTPException(status_code=404, detail="Notebook not found")
+    return notebook.children

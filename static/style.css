@@ -183,25 +183,6 @@ nav {
   background: #f5f5f5;
 }
 
-/* cuadrícula de notas */
-#notes-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
-}
-
-/* tarjeta individual */
-#notes-container > div {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: box-shadow 0.2s;
-}
-
 #notes-container > div:hover {
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
@@ -266,9 +247,57 @@ nav {
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
-/* edición inline */
-#notes-container div input,
-#notes-container div textarea {
+/* tabla de notas */
+#notes-container {
+  width: 100%;
+}
+
+#notes-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#notes-container th {
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+#notes-container td {
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: top;
+}
+
+#notes-container tr:hover td {
+  background: #fafafa;
+}
+
+#notes-container td:first-child {
+  font-weight: 500;
+  color: #222;
+  width: 30%;
+}
+
+#notes-container td:nth-child(2) {
+  color: #555;
+  line-height: 1.5;
+}
+
+#notes-container td:last-child {
+  width: 120px;
+  text-align: right;
+}
+
+/* edición inline en tabla */
+#notes-container td input,
+#notes-container td textarea {
   width: 100%;
   padding: 6px 10px;
   font-size: 14px;
@@ -281,8 +310,8 @@ nav {
   transition: border-color 0.2s;
 }
 
-#notes-container div input:focus,
-#notes-container div textarea:focus {
+#notes-container td input:focus,
+#notes-container td textarea:focus {
   outline: none;
   border-color: #666;
   background: #fff;
@@ -397,4 +426,47 @@ nav {
 #search-input:focus {
   outline: none;
   border-color: #999;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 32px 0 16px;
+  color: #888;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+#sub-notebooks-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+#sub-notebooks-container > div {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+#sub-notebooks-container > div:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }

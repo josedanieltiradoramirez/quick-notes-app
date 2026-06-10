@@ -11,15 +11,10 @@ const searchInput = document.querySelector('#search-input')
 
 searchInput.addEventListener('input', function() {
     const query = searchInput.value.toLowerCase()
-    const cards = container.querySelectorAll(':scope > div')
-    
-    cards.forEach(card => {
-        const text = card.textContent.toLowerCase()
-        if (text.includes(query)) {
-            card.style.display = 'flex'
-        } else {
-            card.style.display = 'none'
-        }
+    const rows = container.querySelectorAll('tbody tr')
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase()
+        row.style.display = text.includes(query) ? '' : 'none'
     })
 })
 
@@ -36,13 +31,26 @@ buttonCancelNote.addEventListener('click', function() {
 async function loadNotes() {
     const response = await fetch(`${API}/api/notes/`)
     const notes = await response.json()
-    container.innerHTML = ''
-    notes.forEach(note => renderNote(note))
+
+    container.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="notes-tbody"></tbody>
+        </table>
+    `
+    const tbody = document.querySelector('#notes-tbody')
+    notes.forEach(note => renderNote(note, tbody))
 }
 
 buttonSaveNote.addEventListener('click', async function() {
-    const title = inputTitle.value.trim()
-    const content = inputBody.value.trim()
+    const title = inputTitle.value.trim()      // ← era inputNoteTitle
+    const content = inputBody.value.trim()     // ← era inputNoteBody
     if (title === '' || content === '') return
 
     const response = await fetch(`${API}/api/notes/`, {
@@ -51,53 +59,66 @@ buttonSaveNote.addEventListener('click', async function() {
         body: JSON.stringify({ title, content })
     })
     const note = await response.json()
-    renderNote(note)
-    inputTitle.value = ''
-    inputBody.value = ''
-    form.classList.add('hidden')
+    const tbody = document.querySelector('#notes-tbody')
+    renderNote(note, tbody)
+    inputTitle.value = ''                      // ← era inputNoteTitle
+    inputBody.value = ''                       // ← era inputNoteBody
+    form.classList.add('hidden')               // ← era noteForm
 })
 
-function renderNote(note) {
-    const div = document.createElement('div')
+function renderNote(note, tbody) {
+    const tr = document.createElement('tr')
 
-    const title = document.createElement('p')
-    title.textContent = note.title
+    const tdTitle = document.createElement('td')
+    tdTitle.textContent = note.title
 
-    const p = document.createElement('p')
-    p.textContent = note.content
+    const tdContent = document.createElement('td')
+    tdContent.textContent = note.content
+
+    const tdActions = document.createElement('td')
 
     const actions = document.createElement('div')
     actions.classList.add('note-actions')
 
     const buttonEdit = document.createElement('button')
     buttonEdit.textContent = 'Edit'
-    buttonEdit.addEventListener('click', function() {
-        // convertir texto en inputs
+    buttonEdit.addEventListener('click', function(e) {
+        e.stopPropagation()
+
         const inputTitle = document.createElement('input')
         inputTitle.value = note.title
 
         const inputContent = document.createElement('textarea')
         inputContent.value = note.content
-        inputContent.rows = 3
+        inputContent.rows = 2
 
         const buttonSave = document.createElement('button')
         buttonSave.textContent = 'Save'
-        buttonSave.addEventListener('click', async function() {
+        buttonSave.addEventListener('click', async function(e) {
+            e.stopPropagation()
             const newTitle = inputTitle.value.trim()
             const newContent = inputContent.value.trim()
             if (newTitle === '' || newContent === '') return
 
-            await editNote(note.id, newTitle, newContent, title, p)
+            await fetch(`${API}/api/notes/${note.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle, content: newContent })
+            })
 
-            // volver a texto normal
-            div.replaceChild(title, inputTitle)
-            div.replaceChild(p, inputContent)
+            note.title = newTitle
+            note.content = newContent
+            tdTitle.textContent = newTitle
+            tdContent.textContent = newContent
+
+            tdTitle.replaceChild(document.createTextNode(newTitle), tdTitle.firstChild)
             actions.replaceChild(buttonEdit, buttonSave)
         })
 
-        // reemplazar texto con inputs
-        div.replaceChild(inputTitle, title)
-        div.replaceChild(inputContent, p)
+        tdTitle.innerHTML = ''
+        tdTitle.appendChild(inputTitle)
+        tdContent.innerHTML = ''
+        tdContent.appendChild(inputContent)
         actions.replaceChild(buttonSave, buttonEdit)
     })
 
@@ -105,15 +126,16 @@ function renderNote(note) {
     buttonDelete.textContent = 'Delete'
     buttonDelete.addEventListener('click', function(e) {
         e.stopPropagation()
-        deleteNote(note.id, div)
+        deleteNote(note.id, tr)
     })
 
     actions.appendChild(buttonEdit)
     actions.appendChild(buttonDelete)
-    div.appendChild(title)
-    div.appendChild(p)
-    div.appendChild(actions)
-    container.appendChild(div)
+    tdActions.appendChild(actions)
+    tr.appendChild(tdTitle)
+    tr.appendChild(tdContent)
+    tr.appendChild(tdActions)
+    tbody.appendChild(tr)
 }
 
 async function deleteNote(id, element) {
