@@ -1,12 +1,10 @@
 const API = 'http://127.0.0.1:8000'
 
 const container = document.querySelector('#notes-container')
-const subNotebooksContainer = document.querySelector('#sub-notebooks-container')
-const notebookTitle = document.querySelector('#notebook-title')
-const backButton = document.querySelector('.back-button')
+const subFoldersContainer = document.querySelector('#sub-folders-container')
+const folderTitle = document.querySelector('#folder-title')
+const backButton = document.querySelector('#back-button')
 
-
-// notas
 const buttonNewNote = document.querySelector('#button-new-note')
 const buttonSaveNote = document.querySelector('#button-save-note')
 const buttonCancelNote = document.querySelector('#button-cancel-note')
@@ -14,14 +12,12 @@ const noteForm = document.querySelector('#new-note-form')
 const inputNoteTitle = document.querySelector('#input-note-title')
 const inputNoteBody = document.querySelector('#input-note-body')
 
-// sub-notebooks
-const buttonNewNotebook = document.querySelector('#button-new-notebook')
-const buttonSaveNotebook = document.querySelector('#button-save-notebook')
-const buttonCancelNotebook = document.querySelector('#button-cancel-notebook')
-const notebookForm = document.querySelector('#new-notebook-form')
-const inputNotebookTitle = document.querySelector('#input-notebook-title')
-const inputNotebookDescription = document.querySelector('#input-notebook-description')
-const selectNotebookType = document.querySelector('#select-notebook-type')
+const buttonNewFolder = document.querySelector('#button-new-folder')
+const buttonSaveFolder = document.querySelector('#button-save-folder')
+const buttonCancelFolder = document.querySelector('#button-cancel-folder')
+const folderForm = document.querySelector('#new-folder-form')
+const inputFolderTitle = document.querySelector('#input-folder-title')
+const inputFolderDescription = document.querySelector('#input-folder-description')
 
 const searchInput = document.querySelector('#search-input')
 
@@ -34,7 +30,6 @@ searchInput.addEventListener('input', function() {
     })
 })
 
-// notas
 buttonNewNote.addEventListener('click', function() {
     noteForm.classList.remove('hidden')
 })
@@ -45,39 +40,45 @@ buttonCancelNote.addEventListener('click', function() {
     inputNoteBody.value = ''
 })
 
-// sub-notebooks
-buttonNewNotebook.addEventListener('click', function() {
-    notebookForm.classList.remove('hidden')
+buttonNewFolder.addEventListener('click', function() {
+    folderForm.classList.remove('hidden')
 })
 
-buttonCancelNotebook.addEventListener('click', function() {
-    notebookForm.classList.add('hidden')
-    inputNotebookTitle.value = ''
-    inputNotebookDescription.value = ''
+buttonCancelFolder.addEventListener('click', function() {
+    folderForm.classList.add('hidden')
+    inputFolderTitle.value = ''
+    inputFolderDescription.value = ''
 })
 
-async function loadNotebook() {
-    const response = await fetch(`${API}/api/notebooks/${NOTEBOOK_ID}`)
-    const notebook = await response.json()
-    notebookTitle.textContent = notebook.title
+async function loadFolder() {
+    const response = await fetch(`${API}/api/folders/${FOLDER_ID}`)
+    const folder = await response.json()
+    folderTitle.textContent = `📁 ${folder.title}`
 
-    // actualizar back button
-    if (notebook.parent_id) {
-        backButton.href = `/notebooks/${notebook.parent_id}`
+    if (folder.parent_id) {
+        // verificar si el padre es notebook o folder
+        const parentResponse = await fetch(`${API}/api/notebooks/${folder.parent_id}`)
+        const parent = await parentResponse.json()
+        
+        if (parent.type === 'folder') {
+            backButton.href = `/folders/${folder.parent_id}`
+        } else {
+            backButton.href = `/notebooks/${folder.parent_id}`
+        }
     } else {
-        backButton.href = '/notebooks'
+        backButton.href = '/folders'
     }
 }
 
-async function loadSubNotebooks() {
-    const response = await fetch(`${API}/api/notebooks/${NOTEBOOK_ID}/notebooks`)
-    const notebooks = await response.json()
-    subNotebooksContainer.innerHTML = ''
-    notebooks.forEach(notebook => renderSubNotebook(notebook))
+async function loadSubFolders() {
+    const response = await fetch(`${API}/api/folders/${FOLDER_ID}/folders`)
+    const folders = await response.json()
+    subFoldersContainer.innerHTML = ''
+    folders.forEach(folder => renderSubFolder(folder))
 }
 
 async function loadNotes() {
-    const response = await fetch(`${API}/api/notebooks/${NOTEBOOK_ID}/notes`) 
+    const response = await fetch(`${API}/api/folders/${FOLDER_ID}/notes`)
     const notes = await response.json()
 
     container.innerHTML = `
@@ -96,22 +97,21 @@ async function loadNotes() {
     notes.forEach(note => renderNote(note, tbody))
 }
 
-buttonSaveNotebook.addEventListener('click', async function() {
-    const title = inputNotebookTitle.value.trim()
-    const description = inputNotebookDescription.value.trim()
+buttonSaveFolder.addEventListener('click', async function() {
+    const title = inputFolderTitle.value.trim()
+    const description = inputFolderDescription.value.trim()
     if (title === '') return
 
-    const response = await fetch(`${API}/api/notebooks/`, {
+    const response = await fetch(`${API}/api/folders/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, parent_id: NOTEBOOK_ID, type: selectNotebookType.value })
-        
+        body: JSON.stringify({ title, description, parent_id: FOLDER_ID })
     })
-    const notebook = await response.json()
-    renderSubNotebook(notebook)
-    inputNotebookTitle.value = ''
-    inputNotebookDescription.value = ''
-    notebookForm.classList.add('hidden')
+    const folder = await response.json()
+    renderSubFolder(folder)
+    inputFolderTitle.value = ''
+    inputFolderDescription.value = ''
+    folderForm.classList.add('hidden')
 })
 
 buttonSaveNote.addEventListener('click', async function() {
@@ -122,7 +122,7 @@ buttonSaveNote.addEventListener('click', async function() {
     const response = await fetch(`${API}/api/notes/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, notebook_ids: [NOTEBOOK_ID] })
+        body: JSON.stringify({ title, content, notebook_ids: [FOLDER_ID] })
     })
     const note = await response.json()
     const tbody = document.querySelector('#notes-tbody')
@@ -132,15 +132,14 @@ buttonSaveNote.addEventListener('click', async function() {
     noteForm.classList.add('hidden')
 })
 
-function renderSubNotebook(notebook) {
+function renderSubFolder(folder) {
     const div = document.createElement('div')
 
     const title = document.createElement('p')
-    const icon = notebook.type === 'folder' ? '📁' : '📓'
-    title.textContent = `${icon} ${notebook.title}`
+    title.textContent = `📁 ${folder.title}`
 
     const description = document.createElement('p')
-    description.textContent = notebook.description || ''
+    description.textContent = folder.description || ''
 
     const actions = document.createElement('div')
     actions.classList.add('note-actions')
@@ -149,22 +148,18 @@ function renderSubNotebook(notebook) {
     buttonDelete.textContent = 'Delete'
     buttonDelete.addEventListener('click', function(e) {
         e.stopPropagation()
-        deleteSubNotebook(notebook.id, div)
+        deleteSubFolder(folder.id, div)
     })
 
     div.addEventListener('click', function() {
-        if (notebook.type === 'folder') {
-            window.location.href = `/folders/${notebook.id}`
-        } else {
-            window.location.href = `/notebooks/${notebook.id}`
-        }
+        window.location.href = `/folders/${folder.id}`
     })
 
     actions.appendChild(buttonDelete)
     div.appendChild(title)
     div.appendChild(description)
     div.appendChild(actions)
-    subNotebooksContainer.appendChild(div)
+    subFoldersContainer.appendChild(div)
 }
 
 function renderNote(note, tbody) {
@@ -177,7 +172,6 @@ function renderNote(note, tbody) {
     tdContent.textContent = note.content
 
     const tdActions = document.createElement('td')
-
     const actions = document.createElement('div')
     actions.classList.add('note-actions')
 
@@ -239,8 +233,8 @@ function renderNote(note, tbody) {
     tbody.appendChild(tr)
 }
 
-async function deleteSubNotebook(id, element) {
-    await fetch(`${API}/api/notebooks/${id}`, { method: 'DELETE' })
+async function deleteSubFolder(id, element) {
+    await fetch(`${API}/api/folders/${id}`, { method: 'DELETE' })
     element.remove()
 }
 
@@ -249,6 +243,6 @@ async function deleteNote(id, element) {
     element.remove()
 }
 
-loadNotebook()
-loadSubNotebooks()
+loadFolder()
+loadSubFolders()
 loadNotes()

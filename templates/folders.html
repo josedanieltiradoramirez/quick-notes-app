@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Folders — Quick Notes{% endblock %}
+
+{% block content %}
+  <div class="content-header">
+    <h1>Folders</h1>
+    <button id="button-new-folder">+ New Folder</button>
+  </div>
+
+  <div id="new-folder-form" class="form-card hidden">
+    <input type="text" id="input-folder-title" placeholder="Folder title">
+    <textarea id="input-folder-description" placeholder="Description (optional)" rows="2"></textarea>
+    <div class="form-actions">
+      <button id="button-save-folder">Save</button>
+      <button id="button-cancel-folder">Cancel</button>
+    </div>
+  </div>
+
+  <input type="text" id="search-input" placeholder="Search folders...">
+
+  <div id="folders-container"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/folders.js"></script>
+{% endblock %}

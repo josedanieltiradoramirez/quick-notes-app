@@ -488,3 +488,62 @@ nav {
     outline: none;
     border-color: #999;
 }
+
+#folders-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+#folders-container > div {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+#folders-container > div:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+#folders-container div input,
+#folders-container div textarea {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  resize: none;
+  background: #fafafa;
+  color: #222;
+  transition: border-color 0.2s;
+}
+
+#sub-folders-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+#sub-folders-container > div {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+#sub-folders-container > div:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
