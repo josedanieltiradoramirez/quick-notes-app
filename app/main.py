@@ -12,8 +12,10 @@ from app.models.notes_bibliographies import NoteBibliography
 from app.routers import notes
 from app.routers import notebooks
 from app.routers import bibliography
+from app.routers import folders
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+
 
 app = FastAPI()
 
@@ -34,6 +36,7 @@ templates = Jinja2Templates(directory="templates")
 app.include_router(notes.router, prefix="/api")
 app.include_router(notebooks.router, prefix="/api")
 app.include_router(bibliography.router, prefix="/api")
+app.include_router(folders.router, prefix="/api")
 
 
 @app.get("/")
@@ -78,4 +81,20 @@ async def bibliography_detail_page(id: int, request: Request):
         request=request,
         name="bibliography_detail.html",
         context={"active": "bibliographies", "bibliography_id": id}
+    )
+
+@app.get("/folders")
+async def folders_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="folders.html",
+        context={"active": "folders"}
+    )
+
+@app.get("/folders/{id}")
+async def folder_detail_page(id: int, request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="folder_detail.html",
+        context={"active": "folders", "folder_id": id}
     )

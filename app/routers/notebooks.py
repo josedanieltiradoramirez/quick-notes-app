@@ -17,10 +17,11 @@ class NotebookSchema(BaseModel):
     title: str
     description: Optional[str] = None
     parent_id: Optional[int] = None
+    type: Optional[str] = 'notebook'
 
 @router.get("/")
 async def get_all_notebooks(db: Session = Depends(get_db)):
-    return db.query(Notebooks).all()
+    return db.query(Notebooks).filter(Notebooks.parent_id == None, Notebooks.type == 'notebook').all()
 
 @router.get("/{id}")
 async def get_notebook_by_id(id: int, db: Session = Depends(get_db)):
@@ -41,7 +42,10 @@ async def create_notebook(notebook: NotebookSchema, db: Session = Depends(get_db
     new_notebook = Notebooks(
         title = notebook.title, 
         description = notebook.description,
-        parent_id = notebook.parent_id)
+        parent_id = notebook.parent_id,
+        type = notebook.type
+    )
+    
     db.add(new_notebook)
     db.commit()
     db.refresh(new_notebook)
@@ -55,6 +59,7 @@ async def edit_notebook(id: int, notebook: NotebookSchema, db: Session = Depends
     existing_notebook.title = notebook.title
     existing_notebook.description = notebook.description
     existing_notebook.parent_id = notebook.parent_id
+    existing_notebook.type = notebook.type
     db.commit()
     db.refresh(existing_notebook)
     return existing_notebook

@@ -470,3 +470,21 @@ nav {
 #sub-notebooks-container > div:hover {
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
+
+.form-card select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    color: #222;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.form-card select:focus {
+    outline: none;
+    border-color: #999;
+}

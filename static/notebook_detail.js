@@ -5,6 +5,7 @@ const subNotebooksContainer = document.querySelector('#sub-notebooks-container')
 const notebookTitle = document.querySelector('#notebook-title')
 const backButton = document.querySelector('.back-button')
 
+
 // notas
 const buttonNewNote = document.querySelector('#button-new-note')
 const buttonSaveNote = document.querySelector('#button-save-note')
@@ -20,6 +21,7 @@ const buttonCancelNotebook = document.querySelector('#button-cancel-notebook')
 const notebookForm = document.querySelector('#new-notebook-form')
 const inputNotebookTitle = document.querySelector('#input-notebook-title')
 const inputNotebookDescription = document.querySelector('#input-notebook-description')
+const selectNotebookType = document.querySelector('#select-notebook-type')
 
 const searchInput = document.querySelector('#search-input')
 
@@ -102,7 +104,8 @@ buttonSaveNotebook.addEventListener('click', async function() {
     const response = await fetch(`${API}/api/notebooks/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, parent_id: NOTEBOOK_ID })
+        body: JSON.stringify({ title, description, parent_id: NOTEBOOK_ID, type: selectNotebookType.value })
+        
     })
     const notebook = await response.json()
     renderSubNotebook(notebook)
@@ -133,7 +136,9 @@ function renderSubNotebook(notebook) {
     const div = document.createElement('div')
 
     const title = document.createElement('p')
-    title.textContent = notebook.title
+    const icon = notebook.type === 'folder' ? '📁' : '📓'
+    title.textContent = `${icon} ${notebook.title}`
+
 
     const description = document.createElement('p')
     description.textContent = notebook.description || ''

@@ -12,11 +12,15 @@
   </div>
 
   <div id="new-notebook-form" class="form-card hidden">
-    <input type="text" id="input-notebook-title" placeholder="Notebook title">
+    <input type="text" id="input-notebook-title" placeholder="Title">
     <textarea id="input-notebook-description" placeholder="Description (optional)" rows="2"></textarea>
+    <select id="select-notebook-type">
+        <option value="notebook">📓 Notebook</option>
+        <option value="folder">📁 Folder</option>
+    </select>
     <div class="form-actions">
-      <button id="button-save-notebook">Save</button>
-      <button id="button-cancel-notebook">Cancel</button>
+        <button id="button-save-notebook">Save</button>
+        <button id="button-cancel-notebook">Cancel</button>
     </div>
   </div>
 
