@@ -547,3 +547,118 @@ nav {
 #sub-folders-container > div:hover {
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
+
+.section-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: transparent;
+  color: #666;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+
+.section-button:hover {
+  background: #f5f5f5;
+  border-color: #999;
+  color: #222;
+}
+
+.tag-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.tag-field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tag-input-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  min-height: 38px;
+  align-items: center;
+  cursor: text;
+}
+
+.tag-input-container input {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-family: inherit;
+  background: transparent;
+  padding: 2px 0;
+  flex: 1;
+  min-width: 120px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #f0f0f0;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #333;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  font-size: 12px;
+  padding: 0;
+  line-height: 1;
+}
+
+.tag button:hover {
+  color: #333;
+}
+
+.tag-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  z-index: 100;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.tag-dropdown.hidden {
+  display: none;
+}
+
+.tag-dropdown-item {
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #333;
+}
+
+.tag-dropdown-item:hover {
+  background: #f5f5f5;
+}

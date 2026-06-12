@@ -5,34 +5,41 @@
 {% block content %}
   <div class="content-header">
     <div style="display:flex; align-items:center; gap:16px;">
-      <a href="/notebooks" class="back-button">← Back</a>
+      <a href="/notebooks" class="back-button" id="back-button">← Back</a>
       <h1 id="notebook-title">Loading...</h1>
     </div>
-    <button id="button-new-notebook">+ New Notebook</button>
   </div>
 
+  <div class="section-divider"><span>Notebooks</span></div>
+
   <div id="new-notebook-form" class="form-card hidden">
-    <input type="text" id="input-notebook-title" placeholder="Title">
+    <input type="text" id="input-notebook-title" placeholder="Notebook title">
     <textarea id="input-notebook-description" placeholder="Description (optional)" rows="2"></textarea>
-    <select id="select-notebook-type">
-        <option value="notebook">📓 Notebook</option>
-        <option value="folder">📁 Folder</option>
-    </select>
     <div class="form-actions">
-        <button id="button-save-notebook">Save</button>
-        <button id="button-cancel-notebook">Cancel</button>
+      <button id="button-save-notebook">Save</button>
+      <button id="button-cancel-notebook">Cancel</button>
     </div>
   </div>
 
+  <button id="button-new-notebook" class="section-button">+ New Notebook</button>
   <div id="sub-notebooks-container"></div>
 
-  <div class="section-divider">
-    <span>Notes</span>
+  <div class="section-divider"><span>Folders</span></div>
+
+  <div id="new-folder-form" class="form-card hidden">
+    <input type="text" id="input-folder-title" placeholder="Folder title">
+    <textarea id="input-folder-description" placeholder="Description (optional)" rows="2"></textarea>
+    <div class="form-actions">
+      <button id="button-save-folder">Save</button>
+      <button id="button-cancel-folder">Cancel</button>
+    </div>
   </div>
 
-  <input type="text" id="search-input" placeholder="Search notes...">
+  <button id="button-new-folder" class="section-button">+ New Folder</button>
+  <div id="sub-folders-container"></div>
 
-  <button id="button-new-note">+ New Note</button>
+  <div class="section-divider"><span>Notes</span></div>
+  <input type="text" id="search-input" placeholder="Search notes...">
 
   <div id="new-note-form" class="form-card hidden">
     <input type="text" id="input-note-title" placeholder="Title">
@@ -43,6 +50,7 @@
     </div>
   </div>
 
+  <button id="button-new-note" class="section-button">+ New Note</button>
   <div id="notes-container"></div>
 {% endblock %}
 

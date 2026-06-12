@@ -13,6 +13,31 @@
   <div id="new-note-form" class="form-card hidden">
     <input type="text" id="input-note-title" placeholder="Title">
     <textarea id="input-note-body" placeholder="Write your note here..." rows="4"></textarea>
+
+    <div class="tag-field">
+      <label>Notebooks</label>
+      <div class="tag-input-container" id="notebook-tags-container">
+        <input type="text" id="input-notebook-search" placeholder="Search notebooks..." autocomplete="off">
+      </div>
+      <div class="tag-dropdown hidden" id="notebook-dropdown"></div>
+    </div>
+
+    <div class="tag-field">
+      <label>Folders</label>
+      <div class="tag-input-container" id="folder-tags-container">
+        <input type="text" id="input-folder-search" placeholder="Search folders..." autocomplete="off">
+      </div>
+      <div class="tag-dropdown hidden" id="folder-dropdown"></div>
+    </div>
+
+    <div class="tag-field">
+      <label>Bibliographies</label>
+      <div class="tag-input-container" id="bibliography-tags-container">
+        <input type="text" id="input-bibliography-search" placeholder="Search bibliographies..." autocomplete="off">
+      </div>
+      <div class="tag-dropdown hidden" id="bibliography-dropdown"></div>
+    </div>
+
     <div class="form-actions">
       <button id="button-save-note">Save</button>
       <button id="button-cancel-note">Cancel</button>
