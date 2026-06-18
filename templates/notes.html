@@ -62,6 +62,30 @@
     <div class="modal-body">
       <input type="text" id="input-edit-note-title" placeholder="Title">
       <textarea id="input-edit-note-body" placeholder="Write your note here..." rows="8"></textarea>
+
+      <div class="tag-field">
+        <label>Notebooks</label>
+        <div class="tag-input-container" id="edit-notebook-tags-container">
+          <input type="text" id="input-edit-notebook-search" placeholder="Search notebooks..." autocomplete="off">
+        </div>
+        <div class="tag-dropdown hidden" id="edit-notebook-dropdown"></div>
+      </div>
+
+      <div class="tag-field">
+        <label>Folders</label>
+        <div class="tag-input-container" id="edit-folder-tags-container">
+          <input type="text" id="input-edit-folder-search" placeholder="Search folders..." autocomplete="off">
+        </div>
+        <div class="tag-dropdown hidden" id="edit-folder-dropdown"></div>
+      </div>
+
+      <div class="tag-field">
+        <label>Bibliographies</label>
+        <div class="tag-input-container" id="edit-bibliography-tags-container">
+          <input type="text" id="input-edit-bibliography-search" placeholder="Search bibliographies..." autocomplete="off">
+        </div>
+        <div class="tag-dropdown hidden" id="edit-bibliography-dropdown"></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button id="button-cancel-edit-note">Cancel</button>

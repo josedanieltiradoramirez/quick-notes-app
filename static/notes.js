@@ -42,6 +42,23 @@ const bibliographySearch = document.querySelector('#input-bibliography-search')
 const bibliographyDropdown = document.querySelector('#bibliography-dropdown')
 const bibliographyTagsContainer = document.querySelector('#bibliography-tags-container')
 
+// edit modal tags
+let editSelectedNotebooks = []
+let editSelectedFolders = []
+let editSelectedBibliographies = []
+
+const editNotebookSearch = document.querySelector('#input-edit-notebook-search')
+const editNotebookDropdown = document.querySelector('#edit-notebook-dropdown')
+const editNotebookTagsContainer = document.querySelector('#edit-notebook-tags-container')
+
+const editFolderSearch = document.querySelector('#input-edit-folder-search')
+const editFolderDropdown = document.querySelector('#edit-folder-dropdown')
+const editFolderTagsContainer = document.querySelector('#edit-folder-tags-container')
+
+const editBibliographySearch = document.querySelector('#input-edit-bibliography-search')
+const editBibliographyDropdown = document.querySelector('#edit-bibliography-dropdown')
+const editBibliographyTagsContainer = document.querySelector('#edit-bibliography-tags-container')
+
 async function loadAllNotebooks() {
     const response = await fetch(`${API}/api/notebooks/`)
     allNotebooks = await response.json()
@@ -68,18 +85,28 @@ function closeModal() {
     clearTags()
 }
 
-function openEditModal(note, tdTitle, tdContent) {
+async function openEditModal(note, tdTitle, tdContent) {
     currentEditNote = note
     currentEditTdTitle = tdTitle
     currentEditTdContent = tdContent
     inputEditTitle.value = note.title
     inputEditBody.value = note.content
+    clearEditTags()
+
+    const response = await fetch(`${API}/api/notes/${note.id}`)
+    const fullNote = await response.json()
+
+    fullNote.notebooks.filter(n => n.type === 'notebook').forEach(n => addEditNotebookTag(n))
+    fullNote.notebooks.filter(n => n.type === 'folder').forEach(f => addEditFolderTag(f))
+    fullNote.bibliographies.forEach(b => addEditBibliographyTag(b))
+
     editModal.classList.remove('hidden')
 }
 
 function closeEditModal() {
     editModal.classList.add('hidden')
     currentEditNote = null
+    clearEditTags()
 }
 
 buttonNewNote.addEventListener('click', openModal)
@@ -103,16 +130,94 @@ buttonSaveEditNote.addEventListener('click', async function() {
     await fetch(`${API}/api/notes/${currentEditNote.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newTitle, content: newContent })
+        body: JSON.stringify({
+            title: newTitle,
+            content: newContent,
+            notebook_ids: editSelectedNotebooks.map(n => n.id),
+            folder_ids: editSelectedFolders.map(f => f.id),
+            bibliography_ids: editSelectedBibliographies.map(b => b.id)
+        })
     })
 
-    currentEditNote.title = newTitle
-    currentEditNote.content = newContent
-    currentEditTdTitle.textContent = newTitle
-    currentEditTdContent.textContent = newContent
-
+    await applyFilters()  // recarga la tabla completa
     closeEditModal()
 })
+
+// edit modal tag listeners
+editNotebookSearch.addEventListener('input', function() {
+    const query = editNotebookSearch.value.toLowerCase()
+    if (query === '') { editNotebookDropdown.classList.add('hidden'); return }
+    const matches = allNotebooks.filter(n =>
+        n.title.toLowerCase().includes(query) &&
+        !editSelectedNotebooks.find(s => s.id === n.id)
+    )
+    renderDropdown(editNotebookDropdown, matches, addEditNotebookTag)
+})
+editNotebookSearch.addEventListener('blur', function() {
+    setTimeout(() => editNotebookDropdown.classList.add('hidden'), 150)
+})
+
+editFolderSearch.addEventListener('input', function() {
+    const query = editFolderSearch.value.toLowerCase()
+    if (query === '') { editFolderDropdown.classList.add('hidden'); return }
+    const matches = allFolders.filter(f =>
+        f.title.toLowerCase().includes(query) &&
+        !editSelectedFolders.find(s => s.id === f.id)
+    )
+    renderDropdown(editFolderDropdown, matches, addEditFolderTag)
+})
+editFolderSearch.addEventListener('blur', function() {
+    setTimeout(() => editFolderDropdown.classList.add('hidden'), 150)
+})
+
+editBibliographySearch.addEventListener('input', function() {
+    const query = editBibliographySearch.value.toLowerCase()
+    if (query === '') { editBibliographyDropdown.classList.add('hidden'); return }
+    const matches = allBibliographies.filter(b =>
+        b.title.toLowerCase().includes(query) &&
+        !editSelectedBibliographies.find(s => s.id === b.id)
+    )
+    renderDropdown(editBibliographyDropdown, matches, addEditBibliographyTag)
+})
+editBibliographySearch.addEventListener('blur', function() {
+    setTimeout(() => editBibliographyDropdown.classList.add('hidden'), 150)
+})
+
+function addEditNotebookTag(notebook) {
+    editSelectedNotebooks.push(notebook)
+    renderTag(editNotebookTagsContainer, editNotebookSearch, notebook, function() {
+        editSelectedNotebooks = editSelectedNotebooks.filter(n => n.id !== notebook.id)
+    })
+    editNotebookSearch.value = ''
+}
+
+function addEditFolderTag(folder) {
+    editSelectedFolders.push(folder)
+    renderTag(editFolderTagsContainer, editFolderSearch, folder, function() {
+        editSelectedFolders = editSelectedFolders.filter(f => f.id !== folder.id)
+    })
+    editFolderSearch.value = ''
+}
+
+function addEditBibliographyTag(bibliography) {
+    editSelectedBibliographies.push(bibliography)
+    renderTag(editBibliographyTagsContainer, editBibliographySearch, bibliography, function() {
+        editSelectedBibliographies = editSelectedBibliographies.filter(b => b.id !== bibliography.id)
+    })
+    editBibliographySearch.value = ''
+}
+
+function clearEditTags() {
+    editSelectedNotebooks = []
+    editSelectedFolders = []
+    editSelectedBibliographies = []
+    editNotebookTagsContainer.querySelectorAll('.tag').forEach(t => t.remove())
+    editFolderTagsContainer.querySelectorAll('.tag').forEach(t => t.remove())
+    editBibliographyTagsContainer.querySelectorAll('.tag').forEach(t => t.remove())
+    editNotebookSearch.value = ''
+    editFolderSearch.value = ''
+    editBibliographySearch.value = ''
+}
 
 // notebook search
 notebookSearch.addEventListener('input', function() {
@@ -259,7 +364,7 @@ buttonSaveNote.addEventListener('click', async function() {
         ...activeBibliographyFilters.map(b => b.id)
     ]
 
-    const response = await fetch(`${API}/api/notes/`, {
+    await fetch(`${API}/api/notes/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -270,9 +375,8 @@ buttonSaveNote.addEventListener('click', async function() {
             folder_ids: [...new Set(folderIds)]
         })
     })
-    const note = await response.json()
-    const tbody = document.querySelector('#notes-tbody')
-    renderNote(note, tbody)
+
+    await applyFilters()  // recarga la tabla completa
     closeModal()
 })
 
@@ -285,6 +389,15 @@ function renderNote(note, tbody) {
 
     const tdContent = document.createElement('td')
     tdContent.textContent = note.content
+
+    const tdNotebooks = document.createElement('td')
+    tdNotebooks.textContent = (note.notebooks || []).map(n => n.title).join(', ')
+
+    const tdFolders = document.createElement('td')
+    tdFolders.textContent = (note.folders || []).map(f => f.title).join(', ')
+
+    const tdBibliographies = document.createElement('td')
+    tdBibliographies.textContent = (note.bibliographies || []).map(b => b.title).join(', ')
 
     const tdActions = document.createElement('td')
     const actions = document.createElement('div')
@@ -305,6 +418,9 @@ function renderNote(note, tbody) {
     tdActions.appendChild(actions)
     tr.appendChild(tdTitle)
     tr.appendChild(tdContent)
+    tr.appendChild(tdNotebooks)
+    tr.appendChild(tdFolders)
+    tr.appendChild(tdBibliographies)
     tr.appendChild(tdActions)
     tbody.appendChild(tr)
 }
@@ -426,6 +542,9 @@ async function applyFilters() {
                 <tr>
                     <th>Title</th>
                     <th>Content</th>
+                    <th>Notebooks</th>
+                    <th>Folders</th>
+                    <th>Bibliographies</th>
                     <th></th>
                 </tr>
             </thead>
@@ -440,3 +559,4 @@ loadNotes()
 loadAllNotebooks()
 loadAllFolders()
 loadAllBibliographies()
+

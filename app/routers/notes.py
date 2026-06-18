@@ -22,17 +22,30 @@ class NoteSchema(BaseModel):
     content: str
     notebook_ids: Optional[List[int]] = []
     bibliography_ids: Optional[List[int]] = []
+    folder_ids: Optional[List[int]] = []
 
 @router.get("/")
 async def get_all_notes(db: Session = Depends(get_db)):
-    return db.query(Notes).all()
+    notes = db.query(Notes).all()
+    result = []
+    for note in notes:
+        result.append({
+            "id": note.id,
+            "title": note.title,
+            "content": note.content,
+            "notebooks": [{"id": n.id, "title": n.title} for n in note.notebooks if n.type == 'notebook'],
+            "folders": [{"id": n.id, "title": n.title} for n in note.notebooks if n.type == 'folder'],
+            "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
+        })
+    return result
 
 @router.post("/")
 async def create_note(note: NoteSchema, db: Session = Depends(get_db)):
     new_note = Notes(title=note.title, content=note.content)
-    
-    if note.notebook_ids:
-        notebooks = db.query(Notebooks).filter(Notebooks.id.in_(note.notebook_ids)).all()
+
+    all_notebook_ids = list(set((note.notebook_ids or []) + (note.folder_ids or [])))
+    if all_notebook_ids:
+        notebooks = db.query(Notebooks).filter(Notebooks.id.in_(all_notebook_ids)).all()
         new_note.notebooks = notebooks
 
     if note.bibliography_ids:
@@ -54,11 +67,14 @@ async def edit_note(id: int, note: NoteSchema, db: Session = Depends(get_db)):
     existing_note.content = note.content
 
     if note.notebook_ids is not None:
-        notebooks = db.query(Notebooks).filter(Notebooks.id.in_(note.notebook_ids)).all()
+        all_ids = list(set((note.notebook_ids or []) + (note.folder_ids or [])))
+        notebooks = db.query(Notebooks).filter(Notebooks.id.in_(all_ids)).all()
         existing_note.notebooks = notebooks
 
     if note.bibliography_ids is not None:
-        bibliographies = db.query(Bibliographies).filter(Bibliographies.id.in_(note.bibliography_ids)).all()
+        bibliographies = db.query(Bibliographies).filter(
+            Bibliographies.id.in_(note.bibliography_ids)
+        ).all()
         existing_note.bibliographies = bibliographies
 
     db.commit()
@@ -88,11 +104,33 @@ async def filter_notes(
 
     if notebook_ids:
         query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))
-
     if folder_ids:
         query = query.filter(Notes.notebooks.any(Notebooks.id.in_(folder_ids)))
-
     if bibliography_ids:
         query = query.filter(Notes.bibliographies.any(Bibliographies.id.in_(bibliography_ids)))
 
-    return query.all()
+    notes = query.all()
+    result = []
+    for note in notes:
+        result.append({
+            "id": note.id,
+            "title": note.title,
+            "content": note.content,
+            "notebooks": [{"id": n.id, "title": n.title} for n in note.notebooks if n.type == 'notebook'],
+            "folders": [{"id": n.id, "title": n.title} for n in note.notebooks if n.type == 'folder'],
+            "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
+        })
+    return result
+
+@router.get("/{id}")
+async def get_note_by_id(id: int, db: Session = Depends(get_db)):
+    note = db.query(Notes).filter(Notes.id == id).first()
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return {
+        "id": note.id,
+        "title": note.title,
+        "content": note.content,
+        "notebooks": [{"id": n.id, "title": n.title, "type": n.type} for n in note.notebooks],
+        "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
+    }
