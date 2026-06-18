@@ -3,7 +3,8 @@ const API = 'http://127.0.0.1:8000'
 const buttonNewNote = document.querySelector('#button-new-note')
 const buttonSaveNote = document.querySelector('#button-save-note')
 const buttonCancelNote = document.querySelector('#button-cancel-note')
-const form = document.querySelector('#new-note-form')
+const buttonCloseModal = document.querySelector('#button-close-modal')
+const modal = document.querySelector('#note-modal')
 const inputTitle = document.querySelector('#input-note-title')
 const inputBody = document.querySelector('#input-note-body')
 const container = document.querySelector('#notes-container')
@@ -39,28 +40,39 @@ async function loadAllFolders() {
     allFolders = await response.json()
 }
 
-
 async function loadAllBibliographies() {
     const response = await fetch(`${API}/api/bibliographies/`)
     allBibliographies = await response.json()
 }
 
+function openModal() {
+    modal.classList.remove('hidden')
+}
 
+function closeModal() {
+    modal.classList.add('hidden')
+    inputTitle.value = ''
+    inputBody.value = ''
+    clearTags()
+}
+
+buttonNewNote.addEventListener('click', openModal)
+buttonCancelNote.addEventListener('click', closeModal)
+buttonCloseModal.addEventListener('click', closeModal)
+modal.addEventListener('click', function(e) {
+    if (e.target === modal) closeModal()
+})
 
 // notebook search
 notebookSearch.addEventListener('input', function() {
     const query = notebookSearch.value.toLowerCase()
-    if (query === '') {
-        notebookDropdown.classList.add('hidden')
-        return
-    }
+    if (query === '') { notebookDropdown.classList.add('hidden'); return }
     const matches = allNotebooks.filter(n =>
         n.title.toLowerCase().includes(query) &&
         !selectedNotebooks.find(s => s.id === n.id)
     )
     renderDropdown(notebookDropdown, matches, addNotebookTag)
 })
-
 notebookSearch.addEventListener('blur', function() {
     setTimeout(() => notebookDropdown.classList.add('hidden'), 150)
 })
@@ -68,17 +80,13 @@ notebookSearch.addEventListener('blur', function() {
 // folder search
 folderSearch.addEventListener('input', function() {
     const query = folderSearch.value.toLowerCase()
-    if (query === '') {
-        folderDropdown.classList.add('hidden')
-        return
-    }
+    if (query === '') { folderDropdown.classList.add('hidden'); return }
     const matches = allFolders.filter(f =>
         f.title.toLowerCase().includes(query) &&
         !selectedFolders.find(s => s.id === f.id)
     )
     renderDropdown(folderDropdown, matches, addFolderTag)
 })
-
 folderSearch.addEventListener('blur', function() {
     setTimeout(() => folderDropdown.classList.add('hidden'), 150)
 })
@@ -86,35 +94,20 @@ folderSearch.addEventListener('blur', function() {
 // bibliography search
 bibliographySearch.addEventListener('input', function() {
     const query = bibliographySearch.value.toLowerCase()
-    if (query === '') {
-        bibliographyDropdown.classList.add('hidden')
-        return
-    }
+    if (query === '') { bibliographyDropdown.classList.add('hidden'); return }
     const matches = allBibliographies.filter(b =>
         b.title.toLowerCase().includes(query) &&
         !selectedBibliographies.find(s => s.id === b.id)
     )
     renderDropdown(bibliographyDropdown, matches, addBibliographyTag)
 })
-
 bibliographySearch.addEventListener('blur', function() {
     setTimeout(() => bibliographyDropdown.classList.add('hidden'), 150)
 })
 
-function addBibliographyTag(bibliography) {
-    selectedBibliographies.push(bibliography)
-    renderTag(bibliographyTagsContainer, bibliographySearch, bibliography, function() {
-        selectedBibliographies = selectedBibliographies.filter(b => b.id !== bibliography.id)
-    })
-    bibliographySearch.value = ''
-}
-
 function renderDropdown(dropdown, items, onSelect) {
     dropdown.innerHTML = ''
-    if (items.length === 0) {
-        dropdown.classList.add('hidden')
-        return
-    }
+    if (items.length === 0) { dropdown.classList.add('hidden'); return }
     items.forEach(item => {
         const div = document.createElement('div')
         div.classList.add('tag-dropdown-item')
@@ -142,6 +135,14 @@ function addFolderTag(folder) {
         selectedFolders = selectedFolders.filter(f => f.id !== folder.id)
     })
     folderSearch.value = ''
+}
+
+function addBibliographyTag(bibliography) {
+    selectedBibliographies.push(bibliography)
+    renderTag(bibliographyTagsContainer, bibliographySearch, bibliography, function() {
+        selectedBibliographies = selectedBibliographies.filter(b => b.id !== bibliography.id)
+    })
+    bibliographySearch.value = ''
 }
 
 function renderTag(container, input, item, onRemove) {
@@ -185,34 +186,8 @@ searchInput.addEventListener('input', function() {
     })
 })
 
-buttonNewNote.addEventListener('click', function() {
-    form.classList.remove('hidden')
-})
-
-buttonCancelNote.addEventListener('click', function() {
-    form.classList.add('hidden')
-    inputTitle.value = ''
-    inputBody.value = ''
-})
-
 async function loadNotes() {
-    const response = await fetch(`${API}/api/notes/`)
-    const notes = await response.json()
-
-    container.innerHTML = `
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Content</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="notes-tbody"></tbody>
-        </table>
-    `
-    const tbody = document.querySelector('#notes-tbody')
-    notes.forEach(note => renderNote(note, tbody))
+    await applyFilters()
 }
 
 buttonSaveNote.addEventListener('click', async function() {
@@ -220,8 +195,18 @@ buttonSaveNote.addEventListener('click', async function() {
     const content = inputBody.value.trim()
     if (title === '' || content === '') return
 
-    const notebookIds = selectedNotebooks.map(n => n.id)
-    const folderIds = selectedFolders.map(f => f.id)
+    const notebookIds = [
+        ...selectedNotebooks.map(n => n.id),
+        ...activeNotebookFilters.map(n => n.id)
+    ]
+    const folderIds = [
+        ...selectedFolders.map(f => f.id),
+        ...activeFolderFilters.map(f => f.id)
+    ]
+    const bibliographyIds = [
+        ...selectedBibliographies.map(b => b.id),
+        ...activeBibliographyFilters.map(b => b.id)
+    ]
 
     const response = await fetch(`${API}/api/notes/`, {
         method: 'POST',
@@ -229,18 +214,15 @@ buttonSaveNote.addEventListener('click', async function() {
         body: JSON.stringify({
             title,
             content,
-            notebook_ids: selectedNotebooks.map(n => n.id),
-            bibliography_ids: selectedBibliographies.map(b => b.id),
-            folder_ids: selectedFolders.map(f => f.id)
+            notebook_ids: [...new Set(notebookIds)],
+            bibliography_ids: [...new Set(bibliographyIds)],
+            folder_ids: [...new Set(folderIds)]
         })
     })
     const note = await response.json()
     const tbody = document.querySelector('#notes-tbody')
     renderNote(note, tbody)
-    inputTitle.value = ''
-    inputBody.value = ''
-    clearTags()
-    form.classList.add('hidden')
+    closeModal()
 })
 
 function renderNote(note, tbody) {
@@ -253,7 +235,6 @@ function renderNote(note, tbody) {
     tdContent.textContent = note.content
 
     const tdActions = document.createElement('td')
-
     const actions = document.createElement('div')
     actions.classList.add('note-actions')
 
@@ -320,14 +301,126 @@ async function deleteNote(id, element) {
     element.remove()
 }
 
-async function editNote(id, newTitle, newContent, elementTitle, elementP) {
-    await fetch(`${API}/api/notes/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newTitle, content: newContent })
+// filters
+let activeNotebookFilters = []
+let activeFolderFilters = []
+let activeBibliographyFilters = []
+
+const filterNotebookSearch = document.querySelector('#input-filter-notebook-search')
+const filterNotebookDropdown = document.querySelector('#filter-notebook-dropdown')
+const filterNotebookTagsContainer = document.querySelector('#filter-notebook-tags-container')
+
+const filterFolderSearch = document.querySelector('#input-filter-folder-search')
+const filterFolderDropdown = document.querySelector('#filter-folder-dropdown')
+const filterFolderTagsContainer = document.querySelector('#filter-folder-tags-container')
+
+const filterBibliographySearch = document.querySelector('#input-filter-bibliography-search')
+const filterBibliographyDropdown = document.querySelector('#filter-bibliography-dropdown')
+const filterBibliographyTagsContainer = document.querySelector('#filter-bibliography-tags-container')
+
+filterNotebookSearch.addEventListener('input', function() {
+    const query = filterNotebookSearch.value.toLowerCase()
+    if (query === '') { filterNotebookDropdown.classList.add('hidden'); return }
+    const matches = allNotebooks.filter(n =>
+        n.title.toLowerCase().includes(query) &&
+        !activeNotebookFilters.find(s => s.id === n.id)
+    )
+    renderDropdown(filterNotebookDropdown, matches, addNotebookFilter)
+})
+filterNotebookSearch.addEventListener('blur', function() {
+    setTimeout(() => filterNotebookDropdown.classList.add('hidden'), 150)
+})
+
+filterFolderSearch.addEventListener('input', function() {
+    const query = filterFolderSearch.value.toLowerCase()
+    if (query === '') { filterFolderDropdown.classList.add('hidden'); return }
+    const matches = allFolders.filter(f =>
+        f.title.toLowerCase().includes(query) &&
+        !activeFolderFilters.find(s => s.id === f.id)
+    )
+    renderDropdown(filterFolderDropdown, matches, addFolderFilter)
+})
+filterFolderSearch.addEventListener('blur', function() {
+    setTimeout(() => filterFolderDropdown.classList.add('hidden'), 150)
+})
+
+filterBibliographySearch.addEventListener('input', function() {
+    const query = filterBibliographySearch.value.toLowerCase()
+    if (query === '') { filterBibliographyDropdown.classList.add('hidden'); return }
+    const matches = allBibliographies.filter(b =>
+        b.title.toLowerCase().includes(query) &&
+        !activeBibliographyFilters.find(s => s.id === b.id)
+    )
+    renderDropdown(filterBibliographyDropdown, matches, addBibliographyFilter)
+})
+filterBibliographySearch.addEventListener('blur', function() {
+    setTimeout(() => filterBibliographyDropdown.classList.add('hidden'), 150)
+})
+
+function addNotebookFilter(notebook) {
+    activeNotebookFilters.push(notebook)
+    renderTag(filterNotebookTagsContainer, filterNotebookSearch, notebook, function() {
+        activeNotebookFilters = activeNotebookFilters.filter(n => n.id !== notebook.id)
+        applyFilters()
     })
-    elementTitle.textContent = newTitle
-    elementP.textContent = newContent
+    filterNotebookSearch.value = ''
+    applyFilters()
+}
+
+function addFolderFilter(folder) {
+    activeFolderFilters.push(folder)
+    renderTag(filterFolderTagsContainer, filterFolderSearch, folder, function() {
+        activeFolderFilters = activeFolderFilters.filter(f => f.id !== folder.id)
+        applyFilters()
+    })
+    filterFolderSearch.value = ''
+    applyFilters()
+}
+
+function addBibliographyFilter(bibliography) {
+    activeBibliographyFilters.push(bibliography)
+    renderTag(filterBibliographyTagsContainer, filterBibliographySearch, bibliography, function() {
+        activeBibliographyFilters = activeBibliographyFilters.filter(b => b.id !== bibliography.id)
+        applyFilters()
+    })
+    filterBibliographySearch.value = ''
+    applyFilters()
+}
+
+async function applyFilters() {
+    const notebookIds = activeNotebookFilters.map(n => n.id)
+    const folderIds = activeFolderFilters.map(f => f.id)
+    const bibliographyIds = activeBibliographyFilters.map(b => b.id)
+
+    const hasFilters = notebookIds.length > 0 || folderIds.length > 0 || bibliographyIds.length > 0
+
+    let url = `${API}/api/notes/`
+
+    if (hasFilters) {
+        const params = new URLSearchParams()
+        notebookIds.forEach(id => params.append('notebook_ids', id))
+        folderIds.forEach(id => params.append('folder_ids', id))
+        bibliographyIds.forEach(id => params.append('bibliography_ids', id))
+        url = `${API}/api/notes/filter?${params.toString()}`
+    }
+
+    const response = await fetch(url)
+    const notes = await response.json()
+
+    container.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="notes-tbody"></tbody>
+        </table>
+    `
+    const tbody = document.querySelector('#notes-tbody')
+    notes.forEach(note => renderNote(note, tbody))
 }
 
 loadNotes()

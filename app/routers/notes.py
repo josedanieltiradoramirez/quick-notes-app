@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -8,6 +8,8 @@ from app.core.database import get_db
 from app.models.bibliographies import Bibliographies
 from app.models.notes import Notes
 from app.models.notebooks import Notebooks
+from typing import Optional, List
+from fastapi import APIRouter, Depends, HTTPException
 
 
 router = APIRouter(
@@ -75,3 +77,22 @@ async def delete_note(id: int, db: Session = Depends(get_db)):
     
     return {"ok" : True}
     
+@router.get("/filter")
+async def filter_notes(
+    notebook_ids: Optional[List[int]] = Query(default=[]),
+    folder_ids: Optional[List[int]] = Query(default=[]),
+    bibliography_ids: Optional[List[int]] = Query(default=[]),
+    db: Session = Depends(get_db)
+):
+    query = db.query(Notes)
+
+    if notebook_ids:
+        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))
+
+    if folder_ids:
+        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(folder_ids)))
+
+    if bibliography_ids:
+        query = query.filter(Notes.bibliographies.any(Bibliographies.id.in_(bibliography_ids)))
+
+    return query.all()
