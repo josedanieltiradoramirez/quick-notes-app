@@ -76,6 +76,23 @@ async function loadAllBibliographies() {
 
 function openModal() {
     modal.classList.remove('hidden')
+    
+    // mostrar los filtros activos como tags heredados
+    activeNotebookFilters.forEach(notebook => {
+        if (!selectedNotebooks.find(n => n.id === notebook.id)) {
+            addNotebookTag(notebook)
+        }
+    })
+    activeFolderFilters.forEach(folder => {
+        if (!selectedFolders.find(f => f.id === folder.id)) {
+            addFolderTag(folder)
+        }
+    })
+    activeBibliographyFilters.forEach(bibliography => {
+        if (!selectedBibliographies.find(b => b.id === bibliography.id)) {
+            addBibliographyTag(bibliography)
+        }
+    })
 }
 
 function closeModal() {
@@ -351,32 +368,19 @@ buttonSaveNote.addEventListener('click', async function() {
     const content = inputBody.value.trim()
     if (title === '' || content === '') return
 
-    const notebookIds = [
-        ...selectedNotebooks.map(n => n.id),
-        ...activeNotebookFilters.map(n => n.id)
-    ]
-    const folderIds = [
-        ...selectedFolders.map(f => f.id),
-        ...activeFolderFilters.map(f => f.id)
-    ]
-    const bibliographyIds = [
-        ...selectedBibliographies.map(b => b.id),
-        ...activeBibliographyFilters.map(b => b.id)
-    ]
-
     await fetch(`${API}/api/notes/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             title,
             content,
-            notebook_ids: [...new Set(notebookIds)],
-            bibliography_ids: [...new Set(bibliographyIds)],
-            folder_ids: [...new Set(folderIds)]
+            notebook_ids: selectedNotebooks.map(n => n.id),
+            bibliography_ids: selectedBibliographies.map(b => b.id),
+            folder_ids: selectedFolders.map(f => f.id)
         })
     })
 
-    await applyFilters()  // recarga la tabla completa
+    await applyFilters()
     closeModal()
 })
 
