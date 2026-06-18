@@ -10,6 +10,18 @@ const inputBody = document.querySelector('#input-note-body')
 const container = document.querySelector('#notes-container')
 const searchInput = document.querySelector('#search-input')
 
+// edit modal
+const editModal = document.querySelector('#edit-note-modal')
+const buttonCloseEditModal = document.querySelector('#button-close-edit-modal')
+const buttonCancelEditNote = document.querySelector('#button-cancel-edit-note')
+const buttonSaveEditNote = document.querySelector('#button-save-edit-note')
+const inputEditTitle = document.querySelector('#input-edit-note-title')
+const inputEditBody = document.querySelector('#input-edit-note-body')
+
+let currentEditNote = null
+let currentEditTdTitle = null
+let currentEditTdContent = null
+
 // tag system
 let selectedNotebooks = []
 let selectedFolders = []
@@ -56,11 +68,50 @@ function closeModal() {
     clearTags()
 }
 
+function openEditModal(note, tdTitle, tdContent) {
+    currentEditNote = note
+    currentEditTdTitle = tdTitle
+    currentEditTdContent = tdContent
+    inputEditTitle.value = note.title
+    inputEditBody.value = note.content
+    editModal.classList.remove('hidden')
+}
+
+function closeEditModal() {
+    editModal.classList.add('hidden')
+    currentEditNote = null
+}
+
 buttonNewNote.addEventListener('click', openModal)
 buttonCancelNote.addEventListener('click', closeModal)
 buttonCloseModal.addEventListener('click', closeModal)
 modal.addEventListener('click', function(e) {
     if (e.target === modal) closeModal()
+})
+
+buttonCloseEditModal.addEventListener('click', closeEditModal)
+buttonCancelEditNote.addEventListener('click', closeEditModal)
+editModal.addEventListener('click', function(e) {
+    if (e.target === editModal) closeEditModal()
+})
+
+buttonSaveEditNote.addEventListener('click', async function() {
+    const newTitle = inputEditTitle.value.trim()
+    const newContent = inputEditBody.value.trim()
+    if (newTitle === '' || newContent === '') return
+
+    await fetch(`${API}/api/notes/${currentEditNote.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle, content: newContent })
+    })
+
+    currentEditNote.title = newTitle
+    currentEditNote.content = newContent
+    currentEditTdTitle.textContent = newTitle
+    currentEditTdContent.textContent = newContent
+
+    closeEditModal()
 })
 
 // notebook search
@@ -227,6 +278,7 @@ buttonSaveNote.addEventListener('click', async function() {
 
 function renderNote(note, tbody) {
     const tr = document.createElement('tr')
+    tr.style.cursor = 'pointer'
 
     const tdTitle = document.createElement('td')
     tdTitle.textContent = note.title
@@ -238,46 +290,8 @@ function renderNote(note, tbody) {
     const actions = document.createElement('div')
     actions.classList.add('note-actions')
 
-    const buttonEdit = document.createElement('button')
-    buttonEdit.textContent = 'Edit'
-    buttonEdit.addEventListener('click', function(e) {
-        e.stopPropagation()
-
-        const inputTitle = document.createElement('input')
-        inputTitle.value = note.title
-
-        const inputContent = document.createElement('textarea')
-        inputContent.value = note.content
-        inputContent.rows = 2
-
-        const buttonSave = document.createElement('button')
-        buttonSave.textContent = 'Save'
-        buttonSave.addEventListener('click', async function(e) {
-            e.stopPropagation()
-            const newTitle = inputTitle.value.trim()
-            const newContent = inputContent.value.trim()
-            if (newTitle === '' || newContent === '') return
-
-            await fetch(`${API}/api/notes/${note.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title: newTitle, content: newContent })
-            })
-
-            note.title = newTitle
-            note.content = newContent
-            tdTitle.textContent = newTitle
-            tdContent.textContent = newContent
-
-            tdTitle.replaceChild(document.createTextNode(newTitle), tdTitle.firstChild)
-            actions.replaceChild(buttonEdit, buttonSave)
-        })
-
-        tdTitle.innerHTML = ''
-        tdTitle.appendChild(inputTitle)
-        tdContent.innerHTML = ''
-        tdContent.appendChild(inputContent)
-        actions.replaceChild(buttonSave, buttonEdit)
+    tr.addEventListener('click', function() {
+        openEditModal(note, tdTitle, tdContent)
     })
 
     const buttonDelete = document.createElement('button')
@@ -287,7 +301,6 @@ function renderNote(note, tbody) {
         deleteNote(note.id, tr)
     })
 
-    actions.appendChild(buttonEdit)
     actions.appendChild(buttonDelete)
     tdActions.appendChild(actions)
     tr.appendChild(tdTitle)
