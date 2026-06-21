@@ -35,7 +35,17 @@ async def get_notebook_notes_by_id(id: int, db: Session = Depends(get_db)):
     notebook = db.query(Notebooks).filter(Notebooks.id == id).first()
     if not notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
-    return notebook.notes
+    
+    result = []
+    for note in notebook.notes:
+        result.append({
+            "id": note.id,
+            "title": note.title,
+            "content": note.content,
+            "notebooks": [{"id": n.id, "title": n.title, "type": n.type} for n in note.notebooks],
+            "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
+        })
+    return result
 
 @router.post("/")
 async def create_notebook(notebook: NotebookSchema, db: Session = Depends(get_db)):
