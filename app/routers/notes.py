@@ -163,3 +163,32 @@ async def filter_notes_in_notebook(
             "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
         })
     return result
+
+@router.get("/filter/folder/{folder_id}")
+async def filter_notes_in_folder(
+    folder_id: int,
+    notebook_ids: Optional[List[int]] = Query(default=[]),
+    folder_ids: Optional[List[int]] = Query(default=[]),
+    bibliography_ids: Optional[List[int]] = Query(default=[]),
+    db: Session = Depends(get_db)
+):
+    query = db.query(Notes).filter(Notes.notebooks.any(Notebooks.id == folder_id))
+
+    if notebook_ids:
+        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))
+    if folder_ids:
+        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(folder_ids)))
+    if bibliography_ids:
+        query = query.filter(Notes.bibliographies.any(Bibliographies.id.in_(bibliography_ids)))
+
+    notes = query.all()
+    result = []
+    for note in notes:
+        result.append({
+            "id": note.id,
+            "title": note.title,
+            "content": note.content,
+            "notebooks": [{"id": n.id, "title": n.title, "type": n.type} for n in note.notebooks],
+            "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
+        })
+    return result

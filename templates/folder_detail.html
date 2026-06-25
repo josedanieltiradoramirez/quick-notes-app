@@ -8,8 +8,9 @@
       <a href="/folders" class="back-button" id="back-button">← Back</a>
       <h1 id="folder-title">Loading...</h1>
     </div>
-    <button id="button-new-folder">+ New Folder</button>
   </div>
+
+  <div class="section-divider"><span>Folders</span></div>
 
   <div id="new-folder-form" class="form-card hidden">
     <input type="text" id="input-folder-title" placeholder="Folder title">
@@ -20,26 +21,122 @@
     </div>
   </div>
 
+  <button id="button-new-folder" class="section-button">+ New Folder</button>
   <div id="sub-folders-container"></div>
 
-  <div class="section-divider">
-    <span>Notes</span>
-  </div>
+  <div class="section-divider"><span>Notes</span></div>
 
-  <input type="text" id="search-input" placeholder="Search notes...">
+  <div class="filter-bar">
+    <div class="tag-field">
+      <div class="tag-input-container" id="filter-notebook-tags-container">
+        <input type="text" id="input-filter-notebook-search" placeholder="Filter by notebook..." autocomplete="off">
+      </div>
+      <div class="tag-dropdown hidden" id="filter-notebook-dropdown"></div>
+    </div>
 
-  <button id="button-new-note">+ New Note</button>
+    <div class="tag-field">
+      <div class="tag-input-container" id="filter-folder-tags-container">
+        <input type="text" id="input-filter-folder-search" placeholder="Filter by folder..." autocomplete="off">
+      </div>
+      <div class="tag-dropdown hidden" id="filter-folder-dropdown"></div>
+    </div>
 
-  <div id="new-note-form" class="form-card hidden">
-    <input type="text" id="input-note-title" placeholder="Title">
-    <textarea id="input-note-body" placeholder="Write your note here..." rows="4"></textarea>
-    <div class="form-actions">
-      <button id="button-save-note">Save</button>
-      <button id="button-cancel-note">Cancel</button>
+    <div class="tag-field">
+      <div class="tag-input-container" id="filter-bibliography-tags-container">
+        <input type="text" id="input-filter-bibliography-search" placeholder="Filter by bibliography..." autocomplete="off">
+      </div>
+      <div class="tag-dropdown hidden" id="filter-bibliography-dropdown"></div>
     </div>
   </div>
 
+  <input type="text" id="search-input" placeholder="Search notes...">
+  <button id="button-new-note" class="section-button">+ New Note</button>
   <div id="notes-container"></div>
+
+  <!-- Modal crear nota -->
+  <div id="note-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>New Note</h2>
+        <button id="button-close-modal" class="modal-close">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="input-note-title" placeholder="Title">
+        <textarea id="input-note-body" placeholder="Write your note here..." rows="5"></textarea>
+
+        <div class="tag-field">
+          <label>Notebooks</label>
+          <div class="tag-input-container" id="notebook-tags-container">
+            <input type="text" id="input-notebook-search" placeholder="Search notebooks..." autocomplete="off">
+          </div>
+          <div class="tag-dropdown hidden" id="notebook-dropdown"></div>
+        </div>
+
+        <div class="tag-field">
+          <label>Folders</label>
+          <div class="tag-input-container" id="folder-tags-container">
+            <input type="text" id="input-folder-search" placeholder="Search folders..." autocomplete="off">
+          </div>
+          <div class="tag-dropdown hidden" id="folder-dropdown"></div>
+        </div>
+
+        <div class="tag-field">
+          <label>Bibliographies</label>
+          <div class="tag-input-container" id="bibliography-tags-container">
+            <input type="text" id="input-bibliography-search" placeholder="Search bibliographies..." autocomplete="off">
+          </div>
+          <div class="tag-dropdown hidden" id="bibliography-dropdown"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="button-cancel-note">Cancel</button>
+        <button id="button-save-note">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal editar nota -->
+  <div id="edit-note-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Edit Note</h2>
+        <button id="button-close-edit-modal" class="modal-close">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="input-edit-note-title" placeholder="Title">
+        <textarea id="input-edit-note-body" placeholder="Write your note here..." rows="5"></textarea>
+
+        <div class="tag-field">
+          <label>Notebooks</label>
+          <div class="tag-input-container" id="edit-notebook-tags-container">
+            <input type="text" id="input-edit-notebook-search" placeholder="Search notebooks..." autocomplete="off">
+          </div>
+          <div class="tag-dropdown hidden" id="edit-notebook-dropdown"></div>
+        </div>
+
+        <div class="tag-field">
+          <label>Folders</label>
+          <div class="tag-input-container" id="edit-folder-tags-container">
+            <input type="text" id="input-edit-folder-search" placeholder="Search folders..." autocomplete="off">
+          </div>
+          <div class="tag-dropdown hidden" id="edit-folder-dropdown"></div>
+        </div>
+
+        <div class="tag-field">
+          <label>Bibliographies</label>
+          <div class="tag-input-container" id="edit-bibliography-tags-container">
+            <input type="text" id="input-edit-bibliography-search" placeholder="Search bibliographies..." autocomplete="off">
+          </div>
+          <div class="tag-dropdown hidden" id="edit-bibliography-dropdown"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="button-cancel-edit-note">Cancel</button>
+        <button id="button-save-edit-note">Save</button>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block scripts %}

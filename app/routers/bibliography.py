@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 
 from app.core.database import get_db
 from app.models.notes import Notes
@@ -74,3 +74,31 @@ async def delete_bibliography(id: int, db: Session = Depends(get_db)):
     
     return {"ok" : True}
     
+@router.get("/filter/bibliography/{bibliography_id}")
+async def filter_notes_in_bibliography(
+    bibliography_id: int,
+    notebook_ids: Optional[List[int]] = Query(default=[]),
+    folder_ids: Optional[List[int]] = Query(default=[]),
+    bibliography_ids: Optional[List[int]] = Query(default=[]),
+    db: Session = Depends(get_db)
+):
+    query = db.query(Notes).filter(Notes.bibliographies.any(Bibliographies.id == bibliography_id))
+
+    if notebook_ids:
+        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))
+    if folder_ids:
+        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(folder_ids)))
+    if bibliography_ids:
+        query = query.filter(Notes.bibliographies.any(Bibliographies.id.in_(bibliography_ids)))
+
+    notes = query.all()
+    result = []
+    for note in notes:
+        result.append({
+            "id": note.id,
+            "title": note.title,
+            "content": note.content,
+            "notebooks": [{"id": n.id, "title": n.title, "type": n.type} for n in note.notebooks],
+            "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
+        })
+    return result
