@@ -1,17 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, Annotated
 
 from app.core.database import get_db
 from app.models.notes import Notes
 from app.models.notebooks import Notebooks
+from app.models.users import Users
+from app.routers.auth import get_current_user
 
 
 router = APIRouter(
     prefix='/notebooks',
     tags=['notebooks']) 
 
+
+db_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[Users, Depends(get_current_user)]
 
 class NotebookSchema(BaseModel):
     title: str
@@ -20,7 +25,7 @@ class NotebookSchema(BaseModel):
     type: Optional[str] = 'notebook'
 
 @router.get("/")
-async def get_all_notebooks(db: Session = Depends(get_db)):
+async def get_all_notebooks(user: user_dependency, db: db_dependency):
     return db.query(Notebooks).filter(Notebooks.parent_id == None, Notebooks.type == 'notebook').all()
 
 @router.get("/{id}")
@@ -48,7 +53,7 @@ async def get_notebook_notes_by_id(id: int, db: Session = Depends(get_db)):
     return result
 
 @router.post("/")
-async def create_notebook(notebook: NotebookSchema, db: Session = Depends(get_db)):
+async def create_notebook(user: user_dependency, notebook: NotebookSchema, db: db_dependency):
     new_notebook = Notebooks(
         title = notebook.title, 
         description = notebook.description,
@@ -62,7 +67,7 @@ async def create_notebook(notebook: NotebookSchema, db: Session = Depends(get_db
     return new_notebook
 
 @router.put("/{id}")
-async def edit_notebook(id: int, notebook: NotebookSchema, db: Session = Depends(get_db)):
+async def edit_notebook(user: user_dependency, id: int, notebook: NotebookSchema, db: db_dependency):
     existing_notebook = db.query(Notebooks).filter(Notebooks.id == id).first()
     if not existing_notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
@@ -75,7 +80,7 @@ async def edit_notebook(id: int, notebook: NotebookSchema, db: Session = Depends
     return existing_notebook
 
 @router.delete("/{id}")
-async def delete_notebook(id: int, db: Session = Depends(get_db)):
+async def delete_notebook(user: user_dependency, id: int, db: db_dependency):
     notebook = db.query(Notebooks).filter(Notebooks.id == id).first()
     if not notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")

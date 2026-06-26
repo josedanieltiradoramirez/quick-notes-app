@@ -3,19 +3,23 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from typing import Annotated
 
 from app.core.database import get_db
 from app.models.bibliographies import Bibliographies
 from app.models.notes import Notes
 from app.models.notebooks import Notebooks
-from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException
+from app.models.users import Users
+from app.routers.auth import get_current_user
 
 
 router = APIRouter(
     prefix='/notes',
     tags=['notes']) 
 
+
+db_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[Users, Depends(get_current_user)]
 
 class NoteSchema(BaseModel):
     title: str
@@ -25,7 +29,7 @@ class NoteSchema(BaseModel):
     folder_ids: Optional[List[int]] = []
 
 @router.get("/")
-async def get_all_notes(db: Session = Depends(get_db)):
+async def get_all_notes(user: user_dependency, db: db_dependency):
     notes = db.query(Notes).all()
     result = []
     for note in notes:
@@ -40,7 +44,7 @@ async def get_all_notes(db: Session = Depends(get_db)):
     return result
 
 @router.post("/")
-async def create_note(note: NoteSchema, db: Session = Depends(get_db)):
+async def create_note(user: user_dependency, note: NoteSchema, db: db_dependency):
     new_note = Notes(title=note.title, content=note.content)
 
     all_notebook_ids = list(set((note.notebook_ids or []) + (note.folder_ids or [])))
@@ -59,7 +63,7 @@ async def create_note(note: NoteSchema, db: Session = Depends(get_db)):
 
 
 @router.put("/{id}")
-async def edit_note(id: int, note: NoteSchema, db: Session = Depends(get_db)):
+async def edit_note(user: user_dependency, id: int, note: NoteSchema, db: db_dependency):
     existing_note = db.query(Notes).filter(Notes.id == id).first()
     if not existing_note:
         raise HTTPException(status_code=404, detail="Note not found")
@@ -84,7 +88,7 @@ async def edit_note(id: int, note: NoteSchema, db: Session = Depends(get_db)):
 
 
 @router.delete("/{id}")
-async def delete_note(id: int, db: Session = Depends(get_db)):
+async def delete_note(user: user_dependency, id: int, db: db_dependency):
     note = db.query(Notes).filter(Notes.id == id).first()
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")

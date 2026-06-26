@@ -10,6 +10,10 @@ class Notebooks(Base):
     description = Column(String, nullable=True)
     type = Column(String, nullable=False, default='notebook')
     parent_id = Column(Integer, ForeignKey('notebooks.id'), nullable=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    # relación con usuario
+    user = relationship('Users', back_populates='notebooks')
 
     # jerarquía
     parent = relationship('Notebooks', remote_side=[id], back_populates='children')

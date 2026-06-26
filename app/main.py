@@ -13,6 +13,8 @@ from app.routers import notes
 from app.routers import notebooks
 from app.routers import bibliography
 from app.routers import folders
+from app.routers import auth
+from app.routers import users
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
@@ -37,6 +39,8 @@ app.include_router(notes.router, prefix="/api")
 app.include_router(notebooks.router, prefix="/api")
 app.include_router(bibliography.router, prefix="/api")
 app.include_router(folders.router, prefix="/api")
+app.include_router(auth.router, prefix="/api")
+app.include_router(users.router, prefix="/api")
 
 
 @app.get("/")

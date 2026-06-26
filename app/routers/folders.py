@@ -1,16 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, Annotated
 
 from app.core.database import get_db
 from app.models.notebooks import Notebooks
 from app.models.notes import Notes
+from app.models.users import Users
+from app.routers.auth import get_current_user
 
 router = APIRouter(
     prefix='/folders',
     tags=['folders']
 )
+
+db_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[Users, Depends(get_current_user)]
 
 class FolderSchema(BaseModel):
     title: str
@@ -18,7 +23,7 @@ class FolderSchema(BaseModel):
     parent_id: Optional[int] = None
 
 @router.get("/")
-async def get_all_folders(db: Session = Depends(get_db)):
+async def get_all_folders(user: user_dependency, db: db_dependency):
     return db.query(Notebooks).filter(
         Notebooks.parent_id == None,
         Notebooks.type == 'folder'
@@ -55,7 +60,7 @@ async def get_folder_notes(id: int, db: Session = Depends(get_db)):
     return folder.notes
 
 @router.post("/")
-async def create_folder(folder: FolderSchema, db: Session = Depends(get_db)):
+async def create_folder(user: user_dependency, folder: FolderSchema, db: db_dependency):
     new_folder = Notebooks(
         title=folder.title,
         description=folder.description,
@@ -68,7 +73,7 @@ async def create_folder(folder: FolderSchema, db: Session = Depends(get_db)):
     return new_folder
 
 @router.put("/{id}")
-async def edit_folder(id: int, folder: FolderSchema, db: Session = Depends(get_db)):
+async def edit_folder(user: user_dependency, id: int, folder: FolderSchema, db: db_dependency):
     existing_folder = db.query(Notebooks).filter(
         Notebooks.id == id,
         Notebooks.type == 'folder'
@@ -83,7 +88,7 @@ async def edit_folder(id: int, folder: FolderSchema, db: Session = Depends(get_d
     return existing_folder
 
 @router.delete("/{id}")
-async def delete_folder(id: int, db: Session = Depends(get_db)):
+async def delete_folder(user: user_dependency, id: int, db: db_dependency):
     folder = db.query(Notebooks).filter(
         Notebooks.id == id,
         Notebooks.type == 'folder'

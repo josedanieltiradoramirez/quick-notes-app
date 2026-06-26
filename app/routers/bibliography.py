@@ -1,19 +1,24 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from typing import Optional, List
+from typing import Optional, Annotated, List
 
 from app.core.database import get_db
 from app.models.notes import Notes
 from app.models.notebooks import Notebooks
 from app.models.bibliographies import Bibliographies
 from app.models.notes_bibliographies import NoteBibliography
+from app.models.users import Users
+from app.routers.auth import get_current_user
 
 
 router = APIRouter(
     prefix='/bibliographies',
     tags=['bibliographies']) 
 
+
+db_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[Users, Depends(get_current_user)]
 
 class BibliographySchema(BaseModel):
     title: str
@@ -22,7 +27,7 @@ class BibliographySchema(BaseModel):
     url: Optional[str] = None
 
 @router.get("/")
-async def get_all_bibliographies(db: Session = Depends(get_db)):
+async def get_all_bibliographies(user: user_dependency, db: db_dependency):
     return db.query(Bibliographies).all()
 
 @router.get("/{id}")
@@ -40,7 +45,7 @@ async def get_bibliography_notes_by_id(id: int, db: Session = Depends(get_db)):
     return bibliography.notes
 
 @router.post("/")
-async def create_bibliography(bibliography: BibliographySchema, db: Session = Depends(get_db)):
+async def create_bibliography(user: user_dependency, bibliography: BibliographySchema, db: db_dependency):
     new_bibliography = Bibliographies(
         title = bibliography.title,
         description = bibliography.description,
@@ -52,7 +57,7 @@ async def create_bibliography(bibliography: BibliographySchema, db: Session = De
     return new_bibliography
 
 @router.put("/{id}")
-async def edit_bibliography(id: int, bibliography: BibliographySchema, db: Session = Depends(get_db)):
+async def edit_bibliography(user: user_dependency, id: int, bibliography: BibliographySchema, db: db_dependency):
     existing_bibliography = db.query(Bibliographies).filter(Bibliographies.id == id).first()
     if not existing_bibliography:
         raise HTTPException(status_code=404, detail="Bibliography not found")
@@ -65,7 +70,7 @@ async def edit_bibliography(id: int, bibliography: BibliographySchema, db: Sessi
     return existing_bibliography
 
 @router.delete("/{id}")
-async def delete_bibliography(id: int, db: Session = Depends(get_db)):
+async def delete_bibliography(user: user_dependency, id: int, db: db_dependency):
     bibliography = db.query(Bibliographies).filter(Bibliographies.id == id).first()
     if not bibliography:
         raise HTTPException(status_code=404, detail="Bibliography not found")
