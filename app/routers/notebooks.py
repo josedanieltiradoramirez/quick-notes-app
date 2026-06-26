@@ -26,18 +26,18 @@ class NotebookSchema(BaseModel):
 
 @router.get("/")
 async def get_all_notebooks(user: user_dependency, db: db_dependency):
-    return db.query(Notebooks).filter(Notebooks.parent_id == None, Notebooks.type == 'notebook').all()
+    return db.query(Notebooks).filter(Notebooks.user_id == user.id, Notebooks.parent_id == None, Notebooks.type == 'notebook').all()
 
 @router.get("/{id}")
-async def get_notebook_by_id(id: int, db: Session = Depends(get_db)):
-    notebook = db.query(Notebooks).filter(Notebooks.id == id).first()
+async def get_notebook_by_id(user: user_dependency, id: int, db: db_dependency):
+    notebook = db.query(Notebooks).filter(Notebooks.id == id, Notebooks.user_id == user.id).first()
     if not notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
     return notebook
 
 @router.get("/{id}/notes")
-async def get_notebook_notes_by_id(id: int, db: Session = Depends(get_db)):
-    notebook = db.query(Notebooks).filter(Notebooks.id == id).first()
+async def get_notebook_notes_by_id(user: user_dependency, id: int, db: db_dependency):
+    notebook = db.query(Notebooks).filter(Notebooks.id == id, Notebooks.user_id == user.id).first()
     if not notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
     
@@ -58,7 +58,8 @@ async def create_notebook(user: user_dependency, notebook: NotebookSchema, db: d
         title = notebook.title, 
         description = notebook.description,
         parent_id = notebook.parent_id,
-        type = notebook.type
+        type = notebook.type,
+        user_id = user.id
     )
     
     db.add(new_notebook)
@@ -68,7 +69,7 @@ async def create_notebook(user: user_dependency, notebook: NotebookSchema, db: d
 
 @router.put("/{id}")
 async def edit_notebook(user: user_dependency, id: int, notebook: NotebookSchema, db: db_dependency):
-    existing_notebook = db.query(Notebooks).filter(Notebooks.id == id).first()
+    existing_notebook = db.query(Notebooks).filter(Notebooks.id == id, Notebooks.user_id == user.id).first()
     if not existing_notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
     existing_notebook.title = notebook.title
@@ -81,7 +82,7 @@ async def edit_notebook(user: user_dependency, id: int, notebook: NotebookSchema
 
 @router.delete("/{id}")
 async def delete_notebook(user: user_dependency, id: int, db: db_dependency):
-    notebook = db.query(Notebooks).filter(Notebooks.id == id).first()
+    notebook = db.query(Notebooks).filter(Notebooks.id == id, Notebooks.user_id == user.id).first()
     if not notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
     db.delete(notebook)
@@ -90,8 +91,8 @@ async def delete_notebook(user: user_dependency, id: int, db: db_dependency):
     return {"ok" : True}
     
 @router.get("/{id}/notebooks")
-async def get_notebook_children(id: int, db: Session = Depends(get_db)):
-    notebook = db.query(Notebooks).filter(Notebooks.id == id).first()
+async def get_notebook_children(user: user_dependency, id: int, db: db_dependency):
+    notebook = db.query(Notebooks).filter(Notebooks.id == id, Notebooks.user_id == user.id).first()
     if not notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
     return notebook.children

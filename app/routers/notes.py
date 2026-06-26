@@ -30,7 +30,7 @@ class NoteSchema(BaseModel):
 
 @router.get("/")
 async def get_all_notes(user: user_dependency, db: db_dependency):
-    notes = db.query(Notes).all()
+    notes = db.query(Notes).filter(Notes.user_id == user.id).all()
     result = []
     for note in notes:
         result.append({
@@ -45,7 +45,7 @@ async def get_all_notes(user: user_dependency, db: db_dependency):
 
 @router.post("/")
 async def create_note(user: user_dependency, note: NoteSchema, db: db_dependency):
-    new_note = Notes(title=note.title, content=note.content)
+    new_note = Notes(title=note.title, content=note.content, user_id=user.id)
 
     all_notebook_ids = list(set((note.notebook_ids or []) + (note.folder_ids or [])))
     if all_notebook_ids:
@@ -64,7 +64,7 @@ async def create_note(user: user_dependency, note: NoteSchema, db: db_dependency
 
 @router.put("/{id}")
 async def edit_note(user: user_dependency, id: int, note: NoteSchema, db: db_dependency):
-    existing_note = db.query(Notes).filter(Notes.id == id).first()
+    existing_note = db.query(Notes).filter(Notes.id == id, Notes.user_id == user.id).first()
     if not existing_note:
         raise HTTPException(status_code=404, detail="Note not found")
     existing_note.title = note.title
@@ -89,7 +89,7 @@ async def edit_note(user: user_dependency, id: int, note: NoteSchema, db: db_dep
 
 @router.delete("/{id}")
 async def delete_note(user: user_dependency, id: int, db: db_dependency):
-    note = db.query(Notes).filter(Notes.id == id).first()
+    note = db.query(Notes).filter(Notes.id == id, Notes.user_id == user.id).first()
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
     db.delete(note)
@@ -102,9 +102,10 @@ async def filter_notes(
     notebook_ids: Optional[List[int]] = Query(default=[]),
     folder_ids: Optional[List[int]] = Query(default=[]),
     bibliography_ids: Optional[List[int]] = Query(default=[]),
-    db: Session = Depends(get_db)
+    user: user_dependency = None,
+    db: db_dependency = None
 ):
-    query = db.query(Notes)
+    query = db.query(Notes).filter(Notes.user_id == user.id)
 
     if notebook_ids:
         query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))
@@ -127,8 +128,8 @@ async def filter_notes(
     return result
 
 @router.get("/{id}")
-async def get_note_by_id(id: int, db: Session = Depends(get_db)):
-    note = db.query(Notes).filter(Notes.id == id).first()
+async def get_note_by_id(user: user_dependency, id: int, db: db_dependency):
+    note = db.query(Notes).filter(Notes.id == id, Notes.user_id == user.id).first()
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
     return {
@@ -145,9 +146,10 @@ async def filter_notes_in_notebook(
     notebook_ids: Optional[List[int]] = Query(default=[]),
     folder_ids: Optional[List[int]] = Query(default=[]),
     bibliography_ids: Optional[List[int]] = Query(default=[]),
-    db: Session = Depends(get_db)
+    user: user_dependency = None,
+    db: db_dependency = None
 ):
-    query = db.query(Notes).filter(Notes.notebooks.any(Notebooks.id == notebook_id))
+    query = db.query(Notes).filter(Notes.user_id == user.id, Notes.notebooks.any(Notebooks.id == notebook_id))
 
     if notebook_ids:
         query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))
@@ -174,9 +176,10 @@ async def filter_notes_in_folder(
     notebook_ids: Optional[List[int]] = Query(default=[]),
     folder_ids: Optional[List[int]] = Query(default=[]),
     bibliography_ids: Optional[List[int]] = Query(default=[]),
-    db: Session = Depends(get_db)
+    user: user_dependency = None,
+    db: db_dependency = None
 ):
-    query = db.query(Notes).filter(Notes.notebooks.any(Notebooks.id == folder_id))
+    query = db.query(Notes).filter(Notes.user_id == user.id, Notes.notebooks.any(Notebooks.id == folder_id))
 
     if notebook_ids:
         query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))

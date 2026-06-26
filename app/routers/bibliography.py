@@ -28,18 +28,18 @@ class BibliographySchema(BaseModel):
 
 @router.get("/")
 async def get_all_bibliographies(user: user_dependency, db: db_dependency):
-    return db.query(Bibliographies).all()
+    return db.query(Bibliographies).filter(Bibliographies.user_id == user.id).all()
 
 @router.get("/{id}")
-async def get_bibliography_by_id(id: int, db: Session = Depends(get_db)):
-    bibliography = db.query(Bibliographies).filter(Bibliographies.id == id).first()
+async def get_bibliography_by_id(user: user_dependency, id: int, db: db_dependency):
+    bibliography = db.query(Bibliographies).filter(Bibliographies.id == id, Bibliographies.user_id == user.id).first()
     if not bibliography:
         raise HTTPException(status_code=404, detail="Bibliography not found")
     return bibliography
 
 @router.get("/{id}/notes")
-async def get_bibliography_notes_by_id(id: int, db: Session = Depends(get_db)):
-    bibliography = db.query(Bibliographies).filter(Bibliographies.id == id).first()
+async def get_bibliography_notes_by_id(user: user_dependency, id: int, db: db_dependency):
+    bibliography = db.query(Bibliographies).filter(Bibliographies.id == id, Bibliographies.user_id == user.id).first()
     if not bibliography:
         raise HTTPException(status_code=404, detail="Bibliography not found")
     return bibliography.notes
@@ -50,7 +50,8 @@ async def create_bibliography(user: user_dependency, bibliography: BibliographyS
         title = bibliography.title,
         description = bibliography.description,
         type = bibliography.type,
-        url = bibliography.url)
+        url = bibliography.url,
+        user_id = user.id)
     db.add(new_bibliography)
     db.commit()
     db.refresh(new_bibliography)
@@ -58,7 +59,7 @@ async def create_bibliography(user: user_dependency, bibliography: BibliographyS
 
 @router.put("/{id}")
 async def edit_bibliography(user: user_dependency, id: int, bibliography: BibliographySchema, db: db_dependency):
-    existing_bibliography = db.query(Bibliographies).filter(Bibliographies.id == id).first()
+    existing_bibliography = db.query(Bibliographies).filter(Bibliographies.id == id, Bibliographies.user_id == user.id).first()
     if not existing_bibliography:
         raise HTTPException(status_code=404, detail="Bibliography not found")
     existing_bibliography.title = bibliography.title
@@ -71,7 +72,7 @@ async def edit_bibliography(user: user_dependency, id: int, bibliography: Biblio
 
 @router.delete("/{id}")
 async def delete_bibliography(user: user_dependency, id: int, db: db_dependency):
-    bibliography = db.query(Bibliographies).filter(Bibliographies.id == id).first()
+    bibliography = db.query(Bibliographies).filter(Bibliographies.id == id, Bibliographies.user_id == user.id).first()
     if not bibliography:
         raise HTTPException(status_code=404, detail="Bibliography not found")
     db.delete(bibliography)
@@ -85,9 +86,10 @@ async def filter_notes_in_bibliography(
     notebook_ids: Optional[List[int]] = Query(default=[]),
     folder_ids: Optional[List[int]] = Query(default=[]),
     bibliography_ids: Optional[List[int]] = Query(default=[]),
-    db: Session = Depends(get_db)
+    user: user_dependency = None,
+    db: db_dependency = None
 ):
-    query = db.query(Notes).filter(Notes.bibliographies.any(Bibliographies.id == bibliography_id))
+    query = db.query(Notes).filter(Notes.user_id == user.id, Notes.bibliographies.any(Bibliographies.id == bibliography_id))
 
     if notebook_ids:
         query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))

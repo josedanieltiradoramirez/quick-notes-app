@@ -25,14 +25,16 @@ class FolderSchema(BaseModel):
 @router.get("/")
 async def get_all_folders(user: user_dependency, db: db_dependency):
     return db.query(Notebooks).filter(
+        Notebooks.user_id == user.id,
         Notebooks.parent_id == None,
         Notebooks.type == 'folder'
     ).all()
 
 @router.get("/{id}")
-async def get_folder_by_id(id: int, db: Session = Depends(get_db)):
+async def get_folder_by_id(user: user_dependency, id: int, db: db_dependency):
     folder = db.query(Notebooks).filter(
         Notebooks.id == id,
+        Notebooks.user_id == user.id,
         Notebooks.type == 'folder'
     ).first()
     if not folder:
@@ -40,9 +42,10 @@ async def get_folder_by_id(id: int, db: Session = Depends(get_db)):
     return folder
 
 @router.get("/{id}/folders")
-async def get_folder_children(id: int, db: Session = Depends(get_db)):
+async def get_folder_children(user: user_dependency, id: int, db: db_dependency):
     folder = db.query(Notebooks).filter(
         Notebooks.id == id,
+        Notebooks.user_id == user.id,
         Notebooks.type == 'folder'
     ).first()
     if not folder:
@@ -50,9 +53,10 @@ async def get_folder_children(id: int, db: Session = Depends(get_db)):
     return [child for child in folder.children if child.type == 'folder']
 
 @router.get("/{id}/notes")
-async def get_folder_notes(id: int, db: Session = Depends(get_db)):
+async def get_folder_notes(user: user_dependency, id: int, db: db_dependency):
     folder = db.query(Notebooks).filter(
         Notebooks.id == id,
+        Notebooks.user_id == user.id,
         Notebooks.type == 'folder'
     ).first()
     if not folder:
@@ -65,7 +69,8 @@ async def create_folder(user: user_dependency, folder: FolderSchema, db: db_depe
         title=folder.title,
         description=folder.description,
         parent_id=folder.parent_id,
-        type='folder'
+        type='folder',
+        user_id=user.id
     )
     db.add(new_folder)
     db.commit()
@@ -76,6 +81,7 @@ async def create_folder(user: user_dependency, folder: FolderSchema, db: db_depe
 async def edit_folder(user: user_dependency, id: int, folder: FolderSchema, db: db_dependency):
     existing_folder = db.query(Notebooks).filter(
         Notebooks.id == id,
+        Notebooks.user_id == user.id,
         Notebooks.type == 'folder'
     ).first()
     if not existing_folder:
@@ -91,6 +97,7 @@ async def edit_folder(user: user_dependency, id: int, folder: FolderSchema, db: 
 async def delete_folder(user: user_dependency, id: int, db: db_dependency):
     folder = db.query(Notebooks).filter(
         Notebooks.id == id,
+        Notebooks.user_id == user.id,
         Notebooks.type == 'folder'
     ).first()
     if not folder:
