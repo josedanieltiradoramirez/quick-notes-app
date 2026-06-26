@@ -12,7 +12,13 @@
   <div class="layout">
 
     <aside class="sidebar">
-      <div class="sidebar-logo">Quick Notes</div>
+      <div class="sidebar-header">
+        <div class="sidebar-logo">Quick Notes</div>
+        <div class="auth-buttons">
+          <a href="/login" id="loginBtn" class="auth-btn" style="display: none;">Iniciar Sesión</a>
+          <button id="logoutBtn" class="auth-btn logout" style="display: none;">Logout</button>
+        </div>
+      </div>
       <nav>
         <a href="/notebooks" class="nav-item {% if active == 'notebooks' %}active{% endif %}">
           <span>📓</span> Notebooks
@@ -35,6 +41,7 @@
 
   </div>
 
+  <script src="/static/auth.js"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

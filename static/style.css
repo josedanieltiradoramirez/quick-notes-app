@@ -700,6 +700,46 @@ nav {
   max-width: 560px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   display: flex;
+}
+
+/* Auth buttons */
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+.auth-btn:hover {
+  background: #5568d3;
+}
+
+.auth-btn.logout {
+  background: #e74c3c;
+}
+
+.auth-btn.logout:hover {
+  background: #c0392b;
+}
   flex-direction: column;
   gap: 0;
   overflow: hidden;

@@ -47,6 +47,20 @@ app.include_router(users.router, prefix="/api")
 async def index(request: Request):
     return RedirectResponse(url="/notebooks")
 
+@app.get("/login")
+async def login_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="login.html"
+    )
+
+@app.get("/register")
+async def register_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="register.html"
+    )
+
 @app.get("/notebooks")
 async def notebooks_page(request: Request):
     return templates.TemplateResponse(
