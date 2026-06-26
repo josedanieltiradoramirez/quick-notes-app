@@ -35,18 +35,31 @@ function logout() {
     window.location.href = '/login';
 }
 
+// Páginas públicas (no requieren autenticación)
+const PUBLIC_PAGES = ['/login', '/register', '/'];
+
+// Verificar si la página actual es pública
+function isPublicPage() {
+    const path = window.location.pathname;
+    return PUBLIC_PAGES.some(page => path === page || path.startsWith(page + '?'));
+}
+
+// Redirigir a login si no está autenticado en páginas protegidas
+function checkAuthOnPageLoad() {
+    if (!isPublicPage() && !isAuthenticated()) {
+        window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
+    }
+}
+
 // Interceptor para fetch - agrega token automáticamente
 const originalFetch = window.fetch;
 window.fetch = function(...args) {
     const url = args[0];
     const options = args[1] || {};
     
-    // No agregar token a peticiones de autenticación
-    if (typeof url === 'string' && (url.includes('/api/auth/') || url.includes('/api/user/'))) {
-        // Para el endpoint de registro, no agregar token
-        if (url.includes('/api/auth/') && options.method === 'POST' && !url.includes('/token')) {
-            return originalFetch.apply(this, args);
-        }
+    // No agregar token a peticiones de autenticación (registro)
+    if (typeof url === 'string' && url.includes('/api/auth/') && options.method === 'POST' && !url.includes('/token')) {
+        return originalFetch.apply(this, args);
     }
     
     // Agregar token a peticiones de API
@@ -57,11 +70,6 @@ window.fetch = function(...args) {
                 options.headers = {};
             }
             options.headers['Authorization'] = `${getTokenType()} ${token}`;
-        } else if (!url.includes('/api/auth/') || url.includes('/api/auth/token')) {
-            // Si no hay token y se necesita, redirigir a login
-            if (options.method && options.method !== 'GET') {
-                // Para cambios, verificar si falla por autenticación
-            }
         }
     }
     
@@ -82,10 +90,7 @@ window.fetch = function(...args) {
 async function getCurrentUser() {
     try {
         const response = await fetch('/api/user/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `${getTokenType()} ${getToken()}`
-            }
+            method: 'GET'
         });
         
         if (response.ok) {
@@ -95,13 +100,6 @@ async function getCurrentUser() {
     } catch (error) {
         console.error('Error getting current user:', error);
         return null;
-    }
-}
-
-// Redirigir a login si no está autenticado
-function requireAuth() {
-    if (!isAuthenticated()) {
-        window.location.href = '/login';
     }
 }
 
@@ -124,4 +122,7 @@ function setupAuthUI() {
 }
 
 // Ejecutar al cargar
-document.addEventListener('DOMContentLoaded', setupAuthUI);
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuthOnPageLoad();
+    setupAuthUI();
+});
