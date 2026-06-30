@@ -12,6 +12,8 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt
 from datetime import timedelta, datetime, timezone
 from fastapi.templating import Jinja2Templates
+from typing import Optional
+
 
 router = APIRouter(
     prefix='/auth',
@@ -31,8 +33,8 @@ class CreateUserRequest(BaseModel):
     first_name: str
     last_name: str
     password: str
-    role: str
-    phone_number: str
+    role: Optional[str] = "user"
+    phone_number: Optional[str] = ""
 
 class Token(BaseModel):
     access_token: str
