@@ -5,95 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Quick Notes</title>
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .auth-container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-        }
-        .auth-container h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
-        }
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .btn:hover {
-            background: #5568d3;
-        }
-        .btn:active {
-            transform: scale(0.98);
-        }
-        .error {
-            color: #e74c3c;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #fadbd8;
-            border-radius: 5px;
-            display: none;
-        }
-        .auth-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-            font-size: 14px;
-        }
-        .auth-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .auth-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
-<body>
+<body class="auth-page">
     <div class="auth-container">
-        <h1>Iniciar Sesión</h1>
+        <h1>Quick Notes</h1>
         <div class="error" id="error"></div>
         <form id="loginForm">
             <div class="form-group">
@@ -118,12 +33,12 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('error');
-            
+
             try {
                 const formData = new FormData();
                 formData.append('username', username);
                 formData.append('password', password);
-                
+
                 const response = await fetch('/api/auth/token', {
                     method: 'POST',
                     body: formData
