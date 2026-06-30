@@ -53,9 +53,13 @@ function checkAuthOnPageLoad() {
 
 // Interceptor para fetch - agrega token automáticamente
 const originalFetch = window.fetch;
+
 window.fetch = function(...args) {
     const url = args[0];
-    const options = args[1] || {};
+
+    // Garantizar que exista el objeto options
+    args[1] = args[1] || {};
+    const options = args[1];
     
     // No agregar token a peticiones de autenticación (registro)
     if (typeof url === 'string' && url.includes('/api/auth/') && options.method === 'POST' && !url.includes('/token')) {
