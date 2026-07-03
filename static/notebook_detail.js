@@ -97,17 +97,17 @@ const filterBibliographyDropdown = document.querySelector('#filter-bibliography-
 const filterBibliographyTagsContainer = document.querySelector('#filter-bibliography-tags-container')
 
 async function loadAllNotebooks() {
-    const response = await fetch(`${API}/api/notebooks/`)
+    const response = await fetch(`/api/notebooks/`)
     allNotebooks = await response.json()
 }
 
 async function loadAllFolders() {
-    const response = await fetch(`${API}/api/folders/`)
+    const response = await fetch(`/api/folders/`)
     allFolders = await response.json()
 }
 
 async function loadAllBibliographies() {
-    const response = await fetch(`${API}/api/bibliographies/`)
+    const response = await fetch(`/api/bibliographies/`)
     allBibliographies = await response.json()
 }
 
@@ -130,7 +130,7 @@ buttonCancelFolder.addEventListener('click', function() {
 })
 
 async function loadNotebook() {
-    const response = await fetch(`${API}/api/notebooks/${NOTEBOOK_ID}`)
+    const response = await fetch(`/api/notebooks/${NOTEBOOK_ID}`)
     const notebook = await response.json()
     notebookTitle.textContent = notebook.title
 
@@ -639,7 +639,7 @@ function renderNote(note, tbody) {
 }
 
 async function deleteNote(id, element) {
-    await fetch(`${API}/api/notes/${id}`, { method: 'DELETE' })
+    await fetch(`/api/notes/${id}`, { method: 'DELETE' })
     element.remove()
 }
 

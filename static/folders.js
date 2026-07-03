@@ -29,7 +29,7 @@ buttonCancelFolder.addEventListener('click', function() {
 })
 
 async function loadFolders() {
-    const response = await fetch(`${API}/api/folders/`)
+    const response = await fetch(`/api/folders/`)
     const folders = await response.json()
     container.innerHTML = ''
     folders.forEach(folder => renderFolder(folder))
@@ -40,7 +40,7 @@ buttonSaveFolder.addEventListener('click', async function() {
     const description = inputDescription.value.trim()
     if (title === '') return
 
-    const response = await fetch(`${API}/api/folders/`, {
+    const response = await fetch(`/api/folders/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description })
@@ -84,7 +84,7 @@ function renderFolder(folder) {
             const newDescription = inputDescription.value.trim()
             if (newTitle === '') return
 
-            await fetch(`${API}/api/folders/${folder.id}`, {
+            await fetch(`/api/folders/${folder.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: newTitle, description: newDescription })
@@ -125,7 +125,7 @@ function renderFolder(folder) {
 }
 
 async function deleteFolder(id, element) {
-    await fetch(`${API}/api/folders/${id}`, { method: 'DELETE' })
+    await fetch(`/api/folders/${id}`, { method: 'DELETE' })
     element.remove()
 }
 

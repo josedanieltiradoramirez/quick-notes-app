@@ -1,4 +1,4 @@
-const API = 'http://127.0.0.1:8000'
+
 
 const buttonNewNote = document.querySelector('#button-new-note')
 const buttonSaveNote = document.querySelector('#button-save-note')
@@ -60,17 +60,17 @@ const editBibliographyDropdown = document.querySelector('#edit-bibliography-drop
 const editBibliographyTagsContainer = document.querySelector('#edit-bibliography-tags-container')
 
 async function loadAllNotebooks() {
-    const response = await fetch(`${API}/api/notebooks/`)
+    const response = await fetch(`/api/notebooks/`)
     allNotebooks = await response.json()
 }
 
 async function loadAllFolders() {
-    const response = await fetch(`${API}/api/folders/`)
+    const response = await fetch(`/api/folders/`)
     allFolders = await response.json()
 }
 
 async function loadAllBibliographies() {
-    const response = await fetch(`${API}/api/bibliographies/`)
+    const response = await fetch(`/api/bibliographies/`)
     allBibliographies = await response.json()
 }
 
@@ -110,7 +110,7 @@ async function openEditModal(note, tdTitle, tdContent) {
     inputEditBody.value = note.content
     clearEditTags()
 
-    const response = await fetch(`${API}/api/notes/${note.id}`)
+    const response = await fetch(`/api/notes/${note.id}`)
     const fullNote = await response.json()
 
     fullNote.notebooks.filter(n => n.type === 'notebook').forEach(n => addEditNotebookTag(n))
@@ -144,7 +144,7 @@ buttonSaveEditNote.addEventListener('click', async function() {
     const newContent = inputEditBody.value.trim()
     if (newTitle === '' || newContent === '') return
 
-    await fetch(`${API}/api/notes/${currentEditNote.id}`, {
+    await fetch(`/api/notes/${currentEditNote.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -368,7 +368,7 @@ buttonSaveNote.addEventListener('click', async function() {
     const content = inputBody.value.trim()
     if (title === '' || content === '') return
 
-    await fetch(`${API}/api/notes/`, {
+    await fetch(`/api/notes/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -430,7 +430,7 @@ function renderNote(note, tbody) {
 }
 
 async function deleteNote(id, element) {
-    await fetch(`${API}/api/notes/${id}`, { method: 'DELETE' })
+    await fetch(`/api/notes/${id}`, { method: 'DELETE' })
     element.remove()
 }
 
@@ -527,14 +527,14 @@ async function applyFilters() {
 
     const hasFilters = notebookIds.length > 0 || folderIds.length > 0 || bibliographyIds.length > 0
 
-    let url = `${API}/api/notes/`
+    let url = `/api/notes/`
 
     if (hasFilters) {
         const params = new URLSearchParams()
         notebookIds.forEach(id => params.append('notebook_ids', id))
         folderIds.forEach(id => params.append('folder_ids', id))
         bibliographyIds.forEach(id => params.append('bibliography_ids', id))
-        url = `${API}/api/notes/filter?${params.toString()}`
+        url = `/api/notes/filter?${params.toString()}`
     }
 
     const response = await fetch(url)

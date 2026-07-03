@@ -1,4 +1,4 @@
-const API = 'http://127.0.0.1:8000'
+
 
 const buttonNewBibliography = document.querySelector('#button-new-bibliography')
 const buttonSaveBibliography = document.querySelector('#button-save-bibliography')
@@ -36,7 +36,7 @@ buttonCancelBibliography.addEventListener('click', function() {
 })
 
 async function loadBibliographies() {
-    const response = await fetch(`${API}/api/bibliographies/`)
+    const response = await fetch(`/api/bibliographies/`)
     const bibliographies = await response.json()
     container.innerHTML = ''
     bibliographies.forEach(bibliography => renderBibliography(bibliography))
@@ -48,7 +48,7 @@ buttonSaveBibliography.addEventListener('click', async function() {
     const description = inputDescription.value.trim()
     if (title === '') return
 
-    const response = await fetch(`${API}/api/bibliographies/`, {
+    const response = await fetch(`/api/bibliographies/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, url, description })
@@ -102,7 +102,7 @@ function renderBibliography(bibliography) {
             const newDescription = inputDescription.value.trim()
             if (newTitle === '') return
 
-            await fetch(`${API}/api/bibliographies/${bibliography.id}`, {
+            await fetch(`/api/bibliographies/${bibliography.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: newTitle, url: newUrl, description: newDescription })
@@ -149,7 +149,7 @@ function renderBibliography(bibliography) {
 }
 
 async function deleteNote(id, element) {
-    await fetch(`${API}/api/bibliographies/${id}`, { method: 'DELETE' })
+    await fetch(`/api/bibliographies/${id}`, { method: 'DELETE' })
     element.remove()
 }
 

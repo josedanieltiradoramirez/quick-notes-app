@@ -1,4 +1,4 @@
-const API = 'http://127.0.0.1:8000'
+
 
 const buttonNewNotebook = document.querySelector('#button-new-notebook')
 const buttonSaveNotebook = document.querySelector('#button-save-notebook')
@@ -36,7 +36,7 @@ buttonCancelNotebook.addEventListener('click', function() {
 
 // cargar notebooks al iniciar
 async function loadNotebooks() {
-    const response = await fetch(`${API}/api/notebooks/`)
+    const response = await fetch(`/api/notebooks/`)
     const notebooks = await response.json()
     container.innerHTML = ''
     notebooks.forEach(notebook => renderNotebook(notebook))
@@ -48,7 +48,7 @@ buttonSaveNotebook.addEventListener('click', async function() {
     const description = inputDescription.value.trim()
     if (title === '') return
 
-    const response = await fetch(`${API}/api/notebooks/`, {
+    const response = await fetch(`/api/notebooks/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description })
@@ -92,7 +92,7 @@ function renderNotebook(notebook) {
             const newDescription = inputDescription.value.trim()
             if (newTitle === '') return
 
-            await fetch(`${API}/api/notebooks/${notebook.id}`, {
+            await fetch(`/api/notebooks/${notebook.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: newTitle, description: newDescription })
@@ -133,7 +133,7 @@ function renderNotebook(notebook) {
 }
 
 async function deleteNotebook(id, element) {
-    await fetch(`${API}/api/notebooks/${id}`, { method: 'DELETE' })
+    await fetch(`/api/notebooks/${id}`, { method: 'DELETE' })
     element.remove()
 }
 
