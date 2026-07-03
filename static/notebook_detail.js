@@ -1,4 +1,4 @@
-const API = 'http://127.0.0.1:8000'
+
 
 const container = document.querySelector('#notes-container')
 const subNotebooksContainer = document.querySelector('#sub-notebooks-container')
@@ -145,14 +145,14 @@ async function loadNotebook() {
 }
 
 async function loadSubNotebooks() {
-    const response = await fetch(`${API}/api/notebooks/${NOTEBOOK_ID}/notebooks`)
+    const response = await fetch(`/api/notebooks/${NOTEBOOK_ID}/notebooks`)
     const children = await response.json()
     subNotebooksContainer.innerHTML = ''
     children.filter(c => c.type === 'notebook').forEach(n => renderSubNotebook(n))
 }
 
 async function loadSubFolders() {
-    const response = await fetch(`${API}/api/notebooks/${NOTEBOOK_ID}/notebooks`)
+    const response = await fetch(`/api/notebooks/${NOTEBOOK_ID}/notebooks`)
     const children = await response.json()
     subFoldersContainer.innerHTML = ''
     children.filter(c => c.type === 'folder').forEach(f => renderSubFolder(f))
@@ -163,7 +163,7 @@ buttonSaveNotebook.addEventListener('click', async function() {
     const description = inputNotebookDescription.value.trim()
     if (title === '') return
 
-    const response = await fetch(`${API}/api/notebooks/`, {
+    const response = await fetch(`/api/notebooks/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description, parent_id: NOTEBOOK_ID, type: 'notebook' })
@@ -180,7 +180,7 @@ buttonSaveFolder.addEventListener('click', async function() {
     const description = inputFolderDescription.value.trim()
     if (title === '') return
 
-    const response = await fetch(`${API}/api/folders/`, {
+    const response = await fetch(`/api/folders/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description, parent_id: NOTEBOOK_ID })
@@ -241,7 +241,7 @@ function renderSubFolder(folder) {
 }
 
 async function deleteSubNotebook(id, element) {
-    await fetch(`${API}/api/notebooks/${id}`, { method: 'DELETE' })
+    await fetch(`/api/notebooks/${id}`, { method: 'DELETE' })
     element.remove()
 }
 
@@ -370,7 +370,7 @@ buttonSaveNote.addEventListener('click', async function() {
     const content = inputBody.value.trim()
     if (title === '' || content === '') return
 
-    await fetch(`${API}/api/notes/`, {
+    await fetch(`/api/notes/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -392,7 +392,7 @@ async function openEditModal(note) {
     inputEditBody.value = note.content
     clearEditTags()
 
-    const response = await fetch(`${API}/api/notes/${note.id}`)
+    const response = await fetch(`/api/notes/${note.id}`)
     const fullNote = await response.json()
 
     fullNote.notebooks.filter(n => n.type === 'notebook').forEach(n => addEditNotebookTag(n))
@@ -477,7 +477,7 @@ buttonSaveEditNote.addEventListener('click', async function() {
     const newContent = inputEditBody.value.trim()
     if (newTitle === '' || newContent === '') return
 
-    await fetch(`${API}/api/notes/${currentEditNote.id}`, {
+    await fetch(`/api/notes/${currentEditNote.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -567,7 +567,7 @@ async function applyFilters() {
     folderIds.forEach(id => params.append('folder_ids', id))
     bibliographyIds.forEach(id => params.append('bibliography_ids', id))
 
-    const url = `${API}/api/notes/filter/notebook/${NOTEBOOK_ID}?${params.toString()}`
+    const url = `/api/notes/filter/notebook/${NOTEBOOK_ID}?${params.toString()}`
 
     const response = await fetch(url)
     const notes = await response.json()
