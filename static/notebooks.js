@@ -23,7 +23,7 @@ searchInput.addEventListener('input', function() {
     })
 })
 
-// mostrar/ocultar formulario
+// show/hide form
 buttonNewNotebook.addEventListener('click', function() {
     form.classList.remove('hidden')
 })
@@ -34,7 +34,7 @@ buttonCancelNotebook.addEventListener('click', function() {
     inputDescription.value = ''
 })
 
-// cargar notebooks al iniciar
+// load notebooks on startup
 async function loadNotebooks() {
     const response = await fetch(`/api/notebooks/`)
     const notebooks = await response.json()
