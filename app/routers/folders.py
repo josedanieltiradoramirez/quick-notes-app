@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional, Annotated
@@ -23,12 +23,14 @@ class FolderSchema(BaseModel):
     parent_id: Optional[int] = None
 
 @router.get("/")
-async def get_all_folders(user: user_dependency, db: db_dependency):
-    return db.query(Notebooks).filter(
+async def get_all_folders(user: user_dependency, db: db_dependency, root_only: bool = Query(False)):
+    query = db.query(Notebooks).filter(
         Notebooks.user_id == user.id,
-        Notebooks.parent_id == None,
         Notebooks.type == 'folder'
-    ).all()
+    )
+    if root_only:
+        query = query.filter(Notebooks.parent_id == None)
+    return query.all()
 
 @router.get("/{id}")
 async def get_folder_by_id(user: user_dependency, id: int, db: db_dependency):

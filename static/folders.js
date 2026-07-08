@@ -29,7 +29,7 @@ buttonCancelFolder.addEventListener('click', function() {
 })
 
 async function loadFolders() {
-    const response = await fetch(`/api/folders/`)
+    const response = await fetch(`/api/folders/?root_only=true`)
     const folders = await response.json()
     container.innerHTML = ''
     folders.forEach(folder => renderFolder(folder))

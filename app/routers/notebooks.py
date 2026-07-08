@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional, Annotated
@@ -25,8 +25,11 @@ class NotebookSchema(BaseModel):
     type: Optional[str] = 'notebook'
 
 @router.get("/")
-async def get_all_notebooks(user: user_dependency, db: db_dependency):
-    return db.query(Notebooks).filter(Notebooks.user_id == user.id, Notebooks.parent_id == None, Notebooks.type == 'notebook').all()
+async def get_all_notebooks(user: user_dependency, db: db_dependency, root_only: bool = Query(False)):
+    query = db.query(Notebooks).filter(Notebooks.user_id == user.id, Notebooks.type == 'notebook')
+    if root_only:
+        query = query.filter(Notebooks.parent_id == None)
+    return query.all()
 
 @router.get("/{id}")
 async def get_notebook_by_id(user: user_dependency, id: int, db: db_dependency):
@@ -95,4 +98,4 @@ async def get_notebook_children(user: user_dependency, id: int, db: db_dependenc
     notebook = db.query(Notebooks).filter(Notebooks.id == id, Notebooks.user_id == user.id).first()
     if not notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
-    return notebook.children
+    return [child for child in notebook.children if child.type == 'notebook']

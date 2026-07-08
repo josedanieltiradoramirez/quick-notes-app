@@ -36,7 +36,7 @@ buttonCancelNotebook.addEventListener('click', function() {
 
 // load notebooks on startup
 async function loadNotebooks() {
-    const response = await fetch(`/api/notebooks/`)
+    const response = await fetch(`/api/notebooks/?root_only=true`)
     const notebooks = await response.json()
     container.innerHTML = ''
     notebooks.forEach(notebook => renderNotebook(notebook))
