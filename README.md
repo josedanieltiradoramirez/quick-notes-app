@@ -4,7 +4,7 @@ A full-stack note-taking web application built with **FastAPI**, **PostgreSQL**,
 
 ## Live Demo
 
-**Application:** https://your-render-app.onrender.com
+**Application:** https://quick-notes-app-blfx.onrender.com/
 
 ## GitHub Repository
 
