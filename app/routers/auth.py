@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from app.models.users import Users
 from passlib.context import CryptContext
+from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from typing import Annotated
@@ -62,7 +64,9 @@ def render_register_page(request: Request):
 
 ### Endpints ###
 def authenticate_user(username: str, password: str, db):
-    user = db.query(Users).filter(Users.username == username).first()
+    user = db.query(Users).filter(
+        or_(Users.username == username, Users.email == username)
+    ).first()
     if not user:
         return False
     if not bcrypt_context.verify(password, user.hashed_password):
@@ -101,6 +105,14 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: db
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency,
                       create_user_request: CreateUserRequest):
+    existing_user = db.query(Users).filter(Users.username == create_user_request.username).first()
+    if existing_user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='This username already exists.')
+
+    existing_email = db.query(Users).filter(Users.email == create_user_request.email).first()
+    if existing_email:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='This email is already registered.')
+
     create_user_model = Users(
         email=create_user_request.email,
         username=create_user_request.username,
@@ -112,7 +124,17 @@ async def create_user(db: db_dependency,
         phone_number=create_user_request.phone_number
     )
     db.add(create_user_model)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        error_message = str(exc.orig).lower() if hasattr(exc, 'orig') else str(exc).lower()
+        if 'username' in error_message:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='This username already exists.')
+        if 'email' in error_message:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='This email is already registered.')
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Unable to create user. Please check your input.')
+
     db.refresh(create_user_model)
     return {
         'id': create_user_model.id,
