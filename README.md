@@ -8,7 +8,7 @@ A full-stack note-taking web application built with **FastAPI**, **PostgreSQL**,
 
 ## GitHub Repository
 
-https://github.com/yourusername/quick-notes-app
+https://github.com/josedanieltiradoramirez/quick-notes-app
 
 ---
 
@@ -136,7 +136,7 @@ The application supports:
 
 ### Login
 
-![Login](docs/register/login_screen.png)
+![Login](docs/login_screen.png)
 
 ### Register 
 ![Register](docs/register_screen.png)
@@ -186,7 +186,7 @@ The application supports:
 
 ### Relation many to many
 
-![Many to Many(docs/relation_many_to_many.png)
+![Many to Many](docs/relation_many_to_many.png)
 
 ---
 
@@ -195,7 +195,7 @@ The application supports:
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/quick-notes-app.git
+git clone https://github.com/josedanieltiradoramirez/quick-notes-app.git
 cd quick-notes-app
 ```
 
@@ -263,24 +263,10 @@ Through this project, I gained practical experience with:
 
 ---
 
-## Future Improvements
-
-* Full mobile responsiveness
-* Rich text editor
-* File attachments
-* Markdown support
-* Search optimization
-* Dark mode
-* Pagination
-* User profile management
-* Note sharing
-* Docker support
-
----
 
 ## Author
 
 **Jose Daniel Tirado Ramirez**
 
-* GitHub: https://github.com/yourusername
-* LinkedIn: https://linkedin.com/in/yourprofile
+* GitHub: https://github.com/josedanieltiradoramirez
+* LinkedIn: https://linkedin.com/in/josedanieltiradoramirez
