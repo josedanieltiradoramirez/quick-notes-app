@@ -136,23 +136,61 @@ The application supports:
 
 ### Login
 
-![Login](docs/screenshots/login.png)
+![Login](docs/register/login_screen.png)
 
-### Notes Dashboard
+### Register 
+![Register](docs/register_screen.png)
 
-![Notes](docs/screenshots/notes.png)
+### All Notes view
 
-### Notebook View
+![All Notes](docs/all_notes_view.png)
 
-![Notebook](docs/screenshots/notebook.png)
+### Notebooks View
 
-### Bibliography View
+![Notebooks](docs/notebooks_view.png)
 
-![Bibliography](docs/screenshots/bibliography.png)
+### Folders View
+
+![Folders](docs/folders_view.png)
+
+### Bibliographies View
+
+![Bibliographies](docs/bibliographies_view.png)
+
+### New note creation
+
+![New note creation](docs/new_note_modal.png)
+
+### Notes repository
+![Notes repository](docs/note_created.png)
+
+### New notebook creation
+
+![New notebook form](docs/new_notebook_form.png)
+
+### Notebook inside notebook
+
+![Notebook inside notebook](docs/notebook_inside_notebook.png)
+
+### New bibliography creation
+
+![New notebook form](docs/new_bibliography_form.png)
+
+### Inheritance of properties
+
+![Inheritance of properties](docs/inheritance_of_properties.png)
+
+### Filters inheritance
+
+![Filters inheritance](docs/filters_inheritance.png)
+
+### Relation many to many
+
+![Many to Many(docs/relation_many_to_many.png)
 
 ---
 
-## 🚀 Local Installation
+## Local Installation
 
 Clone the repository:
 
@@ -208,7 +246,7 @@ http://127.0.0.1:8000
 
 ---
 
-## 📚 What I Learned
+## What I Learned
 
 Through this project, I gained practical experience with:
 
@@ -225,7 +263,7 @@ Through this project, I gained practical experience with:
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 * Full mobile responsiveness
 * Rich text editor
@@ -240,7 +278,7 @@ Through this project, I gained practical experience with:
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Jose Daniel Tirado Ramirez**
 
