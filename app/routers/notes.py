@@ -13,6 +13,12 @@ from app.models.users import Users
 from app.routers.auth import get_current_user
 
 
+def apply_multiple_relationship_filter(query, relationship, model_class, selected_ids):
+    for selected_id in selected_ids:
+        query = query.filter(relationship.any(model_class.id == selected_id))
+    return query
+
+
 router = APIRouter(
     prefix='/notes',
     tags=['notes']) 
@@ -108,11 +114,11 @@ async def filter_notes(
     query = db.query(Notes).filter(Notes.user_id == user.id)
 
     if notebook_ids:
-        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))
+        query = apply_multiple_relationship_filter(query, Notes.notebooks, Notebooks, notebook_ids)
     if folder_ids:
-        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(folder_ids)))
+        query = apply_multiple_relationship_filter(query, Notes.notebooks, Notebooks, folder_ids)
     if bibliography_ids:
-        query = query.filter(Notes.bibliographies.any(Bibliographies.id.in_(bibliography_ids)))
+        query = apply_multiple_relationship_filter(query, Notes.bibliographies, Bibliographies, bibliography_ids)
 
     notes = query.all()
     result = []
@@ -152,11 +158,11 @@ async def filter_notes_in_notebook(
     query = db.query(Notes).filter(Notes.user_id == user.id, Notes.notebooks.any(Notebooks.id == notebook_id))
 
     if notebook_ids:
-        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))
+        query = apply_multiple_relationship_filter(query, Notes.notebooks, Notebooks, notebook_ids)
     if folder_ids:
-        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(folder_ids)))
+        query = apply_multiple_relationship_filter(query, Notes.notebooks, Notebooks, folder_ids)
     if bibliography_ids:
-        query = query.filter(Notes.bibliographies.any(Bibliographies.id.in_(bibliography_ids)))
+        query = apply_multiple_relationship_filter(query, Notes.bibliographies, Bibliographies, bibliography_ids)
 
     notes = query.all()
     result = []
@@ -182,11 +188,11 @@ async def filter_notes_in_folder(
     query = db.query(Notes).filter(Notes.user_id == user.id, Notes.notebooks.any(Notebooks.id == folder_id))
 
     if notebook_ids:
-        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(notebook_ids)))
+        query = apply_multiple_relationship_filter(query, Notes.notebooks, Notebooks, notebook_ids)
     if folder_ids:
-        query = query.filter(Notes.notebooks.any(Notebooks.id.in_(folder_ids)))
+        query = apply_multiple_relationship_filter(query, Notes.notebooks, Notebooks, folder_ids)
     if bibliography_ids:
-        query = query.filter(Notes.bibliographies.any(Bibliographies.id.in_(bibliography_ids)))
+        query = apply_multiple_relationship_filter(query, Notes.bibliographies, Bibliographies, bibliography_ids)
 
     notes = query.all()
     result = []
