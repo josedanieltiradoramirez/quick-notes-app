@@ -84,14 +84,23 @@ function renderBibliography(bibliography) {
         e.stopPropagation()
         const inputTitle = document.createElement('input')
         inputTitle.value = bibliography.title
+        inputTitle.addEventListener('click', function(e) {
+            e.stopPropagation()
+        })
 
         const inputUrl = document.createElement('input')
         inputUrl.value = bibliography.url || ''
         inputUrl.placeholder = 'URL'
+        inputUrl.addEventListener('click', function(e) {
+            e.stopPropagation()
+        })
 
         const inputDescription = document.createElement('textarea')
         inputDescription.value = bibliography.description || ''
         inputDescription.rows = 2
+        inputDescription.addEventListener('click', function(e) {
+            e.stopPropagation()
+        })
 
         const buttonSave = document.createElement('button')
         buttonSave.textContent = 'Save'

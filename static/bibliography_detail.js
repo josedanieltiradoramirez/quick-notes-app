@@ -13,6 +13,7 @@ const buttonCloseModal = document.querySelector('#button-close-modal')
 const modal = document.querySelector('#note-modal')
 const inputTitle = document.querySelector('#input-note-title')
 const inputBody = document.querySelector('#input-note-body')
+const inputNoteType = document.querySelector('#input-note-type')
 
 // edit note modal
 const editModal = document.querySelector('#edit-note-modal')
@@ -21,6 +22,7 @@ const buttonCancelEditNote = document.querySelector('#button-cancel-edit-note')
 const buttonSaveEditNote = document.querySelector('#button-save-edit-note')
 const inputEditTitle = document.querySelector('#input-edit-note-title')
 const inputEditBody = document.querySelector('#input-edit-note-body')
+const inputEditNoteType = document.querySelector('#input-edit-note-type')
 
 let currentEditNote = null
 
@@ -112,6 +114,7 @@ function closeModal() {
     modal.classList.add('hidden')
     inputTitle.value = ''
     inputBody.value = ''
+    inputNoteType.value = 'note'
     clearTags()
 }
 
@@ -218,6 +221,7 @@ buttonSaveNote.addEventListener('click', async function() {
         body: JSON.stringify({
             title,
             content,
+            type: inputNoteType.value,
             notebook_ids: selectedNotebooks.map(n => n.id),
             bibliography_ids: selectedBibliographies.map(b => b.id),
             folder_ids: selectedFolders.map(f => f.id)
@@ -236,6 +240,7 @@ async function openEditModal(note) {
 
     const response = await fetch(`/api/notes/${note.id}`)
     const fullNote = await response.json()
+    inputEditNoteType.value = fullNote.type || 'note'
 
     fullNote.notebooks.filter(n => n.type === 'notebook').forEach(n => addEditNotebookTag(n))
     fullNote.notebooks.filter(n => n.type === 'folder').forEach(f => addEditFolderTag(f))
@@ -247,6 +252,7 @@ async function openEditModal(note) {
 function closeEditModal() {
     editModal.classList.add('hidden')
     currentEditNote = null
+    inputEditNoteType.value = 'note'
     clearEditTags()
 }
 
@@ -325,6 +331,7 @@ buttonSaveEditNote.addEventListener('click', async function() {
         body: JSON.stringify({
             title: newTitle,
             content: newContent,
+            type: inputEditNoteType.value,
             notebook_ids: editSelectedNotebooks.map(n => n.id),
             folder_ids: editSelectedFolders.map(f => f.id),
             bibliography_ids: editSelectedBibliographies.map(b => b.id)

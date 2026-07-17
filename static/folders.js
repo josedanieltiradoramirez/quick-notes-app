@@ -71,10 +71,16 @@ function renderFolder(folder) {
 
         const inputTitle = document.createElement('input')
         inputTitle.value = folder.title
+        inputTitle.addEventListener('click', function(e) {
+            e.stopPropagation()
+        })
 
         const inputDescription = document.createElement('textarea')
         inputDescription.value = folder.description || ''
         inputDescription.rows = 2
+        inputDescription.addEventListener('click', function(e) {
+            e.stopPropagation()
+        })
 
         const buttonSave = document.createElement('button')
         buttonSave.textContent = 'Save'

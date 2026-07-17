@@ -79,10 +79,16 @@ function renderNotebook(notebook) {
         e.stopPropagation()
         const inputTitle = document.createElement('input')
         inputTitle.value = notebook.title
+        inputTitle.addEventListener('click', function(e) {
+            e.stopPropagation()
+        })
 
         const inputDescription = document.createElement('textarea')
         inputDescription.value = notebook.description || ''
         inputDescription.rows = 2
+        inputDescription.addEventListener('click', function(e) {
+            e.stopPropagation()
+        })
 
         const buttonSave = document.createElement('button')
         buttonSave.textContent = 'Save'

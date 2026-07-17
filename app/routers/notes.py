@@ -30,6 +30,7 @@ user_dependency = Annotated[Users, Depends(get_current_user)]
 class NoteSchema(BaseModel):
     title: str
     content: str
+    type: Optional[str] = 'note'
     notebook_ids: Optional[List[int]] = []
     bibliography_ids: Optional[List[int]] = []
     folder_ids: Optional[List[int]] = []
@@ -43,6 +44,7 @@ async def get_all_notes(user: user_dependency, db: db_dependency):
             "id": note.id,
             "title": note.title,
             "content": note.content,
+            "type": note.type,
             "notebooks": [{"id": n.id, "title": n.title} for n in note.notebooks if n.type == 'notebook'],
             "folders": [{"id": n.id, "title": n.title} for n in note.notebooks if n.type == 'folder'],
             "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
@@ -51,7 +53,7 @@ async def get_all_notes(user: user_dependency, db: db_dependency):
 
 @router.post("/")
 async def create_note(user: user_dependency, note: NoteSchema, db: db_dependency):
-    new_note = Notes(title=note.title, content=note.content, user_id=user.id)
+    new_note = Notes(title=note.title, content=note.content, type=note.type, user_id=user.id)
 
     all_notebook_ids = list(set((note.notebook_ids or []) + (note.folder_ids or [])))
     if all_notebook_ids:
@@ -75,6 +77,7 @@ async def edit_note(user: user_dependency, id: int, note: NoteSchema, db: db_dep
         raise HTTPException(status_code=404, detail="Note not found")
     existing_note.title = note.title
     existing_note.content = note.content
+    existing_note.type = note.type
 
     if note.notebook_ids is not None:
         all_ids = list(set((note.notebook_ids or []) + (note.folder_ids or [])))
@@ -127,6 +130,7 @@ async def filter_notes(
             "id": note.id,
             "title": note.title,
             "content": note.content,
+            "type": note.type,
             "notebooks": [{"id": n.id, "title": n.title} for n in note.notebooks if n.type == 'notebook'],
             "folders": [{"id": n.id, "title": n.title} for n in note.notebooks if n.type == 'folder'],
             "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
@@ -142,6 +146,7 @@ async def get_note_by_id(user: user_dependency, id: int, db: db_dependency):
         "id": note.id,
         "title": note.title,
         "content": note.content,
+        "type": note.type,
         "notebooks": [{"id": n.id, "title": n.title, "type": n.type} for n in note.notebooks],
         "bibliographies": [{"id": b.id, "title": b.title} for b in note.bibliographies]
     }

@@ -8,6 +8,7 @@ class Notes(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     content = Column(String, nullable=False)
+    type = Column(String, nullable=False, default='note')
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     
     # relación con usuario

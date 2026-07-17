@@ -374,6 +374,13 @@ nav {
   transition: border-color 0.2s;
 }
 
+#bibliographies-container div input:focus,
+#bibliographies-container div textarea:focus {
+  outline: none;
+  border-color: #666;
+  background: #fff;
+}
+
 #bibliographies-container a {
   font-size: 13px;
   color: #4a90d9;
@@ -391,6 +398,11 @@ nav {
 
 #bibliographies-container > div * {
   cursor: pointer;
+}
+
+#bibliographies-container div input,
+#bibliographies-container div textarea {
+  cursor: text;
 }
 
 .back-button {
@@ -525,6 +537,13 @@ nav {
   transition: border-color 0.2s;
 }
 
+#folders-container div input:focus,
+#folders-container div textarea:focus {
+  outline: none;
+  border-color: #666;
+  background: #fff;
+}
+
 #sub-folders-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -577,12 +596,15 @@ nav {
   position: relative;
 }
 
+
 .tag-field label {
+  display: block;
+  margin-bottom: 6px;
   font-size: 12px;
   font-weight: 500;
   color: #888;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: .05em;
 }
 
 .tag-input-container {
@@ -739,6 +761,8 @@ nav {
   gap: 16px;
 }
 
+
+
 .modal-body input[type="text"],
 .modal-body textarea {
   width: 100%;
@@ -750,7 +774,7 @@ nav {
   resize: none;
   background: #fff;
   color: #222;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
@@ -758,6 +782,50 @@ nav {
 .modal-body textarea:focus {
   outline: none;
   border-color: #999;
+  box-shadow: 0 0 0 3px rgba(0,0,0,.04);
+}
+
+
+.modal-body select {
+  width: 100%;
+  padding: 10px 40px 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #222;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #7a7a7a 50%),
+    linear-gradient(135deg, #7a7a7a 50%, transparent 50%);
+  background-position:
+    calc(100% - 13px) calc(50% - 2px),
+    calc(100% - 8px) calc(50% - 2px);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.modal-body select:hover {
+  border-color: #c7c7c7;
+}
+
+.modal-body select:focus {
+  outline: none;
+  border-color: #999;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+}
+
+.modal-body select option {
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: #222;
+  background: #fff;
 }
 
 .modal-footer {

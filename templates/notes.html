@@ -22,6 +22,22 @@
       <textarea id="input-note-body" placeholder="Write your note here..." rows="5"></textarea>
 
       <div class="tag-field">
+        <label>Type</label>
+        <select id="input-note-type">
+          <option value="note">Note</option>
+          <option value="extract">Extract</option>
+          <option value="attachment">Attachment</option>
+          <option value="url">URL</option>
+          <option value="summary">Summary</option>
+          <option value="phone_number">Phone number</option>
+          <option value="task">Task</option>
+          <option value="checklist">Checklist</option>
+          <option value="idea">Idea</option>
+          <option value="reference">Reference</option>
+        </select>
+      </div>
+
+      <div class="tag-field">
         <label>Notebooks</label>
         <div class="tag-input-container" id="notebook-tags-container">
           <input type="text" id="input-notebook-search" placeholder="Search notebooks..." autocomplete="off">
@@ -62,6 +78,22 @@
     <div class="modal-body">
       <input type="text" id="input-edit-note-title" placeholder="Title">
       <textarea id="input-edit-note-body" placeholder="Write your note here..." rows="8"></textarea>
+
+      <div class="tag-field">
+        <label>Type</label>
+        <select id="input-edit-note-type">
+          <option value="note">Note</option>
+          <option value="extract">Extract</option>
+          <option value="attachment">Attachment</option>
+          <option value="url">URL</option>
+          <option value="summary">Summary</option>
+          <option value="phone_number">Phone number</option>
+          <option value="task">Task</option>
+          <option value="checklist">Checklist</option>
+          <option value="idea">Idea</option>
+          <option value="reference">Reference</option>
+        </select>
+      </div>
 
       <div class="tag-field">
         <label>Notebooks</label>
